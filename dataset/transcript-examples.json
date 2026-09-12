@@ -1,0 +1,1164 @@
+{
+  "dataset_id": "TRANSCRIPT_ELECTRONICS_EXAMPLES_001",
+  "language": "vi-VN",
+  "domain": "electronics",
+  "description": "Mẫu transcript đa phiên cho Harness Agent, bám theo base knowledge electronics. Keys dùng tiếng Anh, giá trị hội thoại và mô tả dùng tiếng Việt.",
+  "general_format": {
+    "scenario_id": "string",
+    "edge_case": "normal | price_compare | mind_change | conflicting_facts | expired_promo | out_of_catalog | out_of_stock | post_purchase_complaint",
+    "customer": {
+      "id": "string",
+      "name": "string",
+      "phone": "masked string",
+      "address": "masked string or null",
+      "persona": "string",
+      "dialect": "northern | central | southern",
+      "profile": "object of persistent customer facts"
+    },
+    "sessions": [
+      {
+        "session_id": "string",
+        "channel": "call | chat",
+        "timestamp": "ISO 8601",
+        "days_later": "integer",
+        "audio_path": "string or null",
+        "customer_goal": "string",
+        "turns": [
+          {
+            "speaker": "customer | agent",
+            "text": "normalized Vietnamese text",
+            "raw_text": "optional spoken/raw Vietnamese text"
+          }
+        ],
+        "summary": "episodic memory summary",
+        "facts_established": "object",
+        "facts_invalidated": "object",
+        "outcome": "callback_scheduled | closed_won | rejected | escalated | resolved"
+      }
+    ],
+    "benchmark": {
+      "target_session_id": "string",
+      "must_carry_over": [
+        "slot_name"
+      ],
+      "must_not_ask": [
+        "slot_name"
+      ],
+      "success_if": {
+        "tool_called": "string or null",
+        "args_match": "object or null",
+        "response_requirements": [
+          "optional textual behavior assertions"
+        ]
+      },
+      "ground_truth_facts": "object"
+    }
+  },
+  "examples": [
+    {
+      "scenario_id": "SC-001",
+      "edge_case": "normal",
+      "customer": {
+        "id": "CUS_0001",
+        "name": "Nguyễn Thị Hoa",
+        "phone": "0982******",
+        "address": "Quận **, TP. Hồ Chí Minh",
+        "persona": "khach_do_du_hoi_nguoi_nha",
+        "dialect": "southern",
+        "profile": {
+          "use_case": "đi làm và họp online",
+          "preferred_color": "trắng",
+          "budget_vnd": 1800000
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0001",
+          "channel": "call",
+          "timestamp": "2026-09-12T09:00:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Tìm tai nghe chống ồn khoảng 1,8 triệu và cần hỏi người nhà trước khi mua.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Chị cần tai nghe không dây có chống ồn, tầm khoảng 1,8 triệu, có mẫu nào phù hợp không em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ có chị. Auralite H5 có chống ồn chủ động, pin 45 giờ, giá niêm yết 1.890.000đ. Hiện có mã H5SAVE200 giảm 200.000đ còn 1.690.000đ đến ngày 30/09/2026."
+            },
+            {
+              "speaker": "customer",
+              "text": "Có màu trắng không em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ có chị, màu trắng hiện còn hàng."
+            },
+            {
+              "speaker": "customer",
+              "text": "Vậy để chị hỏi chồng rồi mai chị liên hệ lại nhé."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ vâng, em đã ghi nhận chị đang quan tâm Auralite H5 màu trắng, giá sau khuyến mãi là 1.690.000đ ạ."
+            }
+          ],
+          "summary": "Khách quan tâm Auralite H5 màu trắng cho nhu cầu đi làm và họp online. Giá sau mã H5SAVE200 là 1.690.000đ. Khách cần hỏi chồng trước khi quyết định.",
+          "facts_established": {
+            "product_id": "ELEC_001",
+            "preferred_color": "trắng",
+            "quoted_price_vnd": 1690000,
+            "promo_code": "H5SAVE200",
+            "promo_expiry": "2026-09-30",
+            "blocker": "consult_spouse"
+          },
+          "facts_invalidated": {},
+          "outcome": "callback_scheduled"
+        },
+        {
+          "session_id": "CALL_0002",
+          "channel": "call",
+          "timestamp": "2026-09-13T10:30:00+07:00",
+          "days_later": 1,
+          "audio_path": null,
+          "customer_goal": "Xác nhận mua Auralite H5 màu trắng.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Chị gọi lại vụ tai nghe hôm qua, chồng chị đồng ý rồi, chị lấy màu trắng nhé."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em nhớ chị đang xem Auralite H5 màu trắng, giá sau mã H5SAVE200 là 1.690.000đ. Chị lấy 1 chiếc đúng không ạ?"
+            },
+            {
+              "speaker": "customer",
+              "text": "Đúng rồi em."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em xác nhận 1 Auralite H5 màu trắng, giá 1.690.000đ. Em sẽ dùng thông tin giao hàng chị đã cung cấp để tạo đơn sau khi chị xác nhận lại người nhận và địa chỉ ạ."
+            }
+          ],
+          "summary": "Khách quay lại và xác nhận mua Auralite H5 màu trắng với giá 1.690.000đ.",
+          "facts_established": {
+            "purchase_confirmed": true,
+            "quantity": 1
+          },
+          "facts_invalidated": {},
+          "outcome": "closed_won"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CALL_0002",
+        "must_carry_over": [
+          "product_id",
+          "preferred_color",
+          "quoted_price_vnd",
+          "promo_code",
+          "blocker"
+        ],
+        "must_not_ask": [
+          "product_id",
+          "preferred_color",
+          "budget_vnd"
+        ],
+        "success_if": {
+          "tool_called": "order.create",
+          "args_match": {
+            "product_id": "ELEC_001",
+            "quantity": 1,
+            "color": "trắng",
+            "price_vnd": 1690000
+          },
+          "response_requirements": [
+            "Nhắc đúng sản phẩm, màu và giá đã tư vấn ở phiên trước."
+          ]
+        },
+        "ground_truth_facts": {
+          "list_price_vnd": 1890000,
+          "final_price_vnd": 1690000,
+          "stock_status": "còn hàng",
+          "white_stock": 10,
+          "promotion_active": true
+        }
+      },
+      "scenario": "do_du_hoi_nguoi_nha"
+    },
+    {
+      "scenario_id": "SC-002",
+      "edge_case": "price_compare",
+      "customer": {
+        "id": "CUS_0002",
+        "name": "Trần Minh Khang",
+        "phone": "0917******",
+        "address": null,
+        "persona": "khach_so_gia",
+        "dialect": "southern",
+        "profile": {
+          "interest": "chuột gaming không dây",
+          "budget_vnd": 1000000
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0003",
+          "channel": "call",
+          "timestamp": "2026-09-12T14:00:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Hỏi giá Vector M2 Pro và muốn áp mã giảm 100.000đ khi mua riêng chuột.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Anh thấy Vector M2 Pro có mã giảm 100 nghìn, mua riêng chuột có còn 890 nghìn không em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ mã M2BUNDLE chỉ áp dụng khi mua kèm bàn phím KeyForge K87. Nếu mua riêng chuột thì giá hiện tại là 990.000đ ạ."
+            },
+            {
+              "speaker": "customer",
+              "text": "Sao bên khác rẻ hơn, bên em giảm riêng cho anh được không?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ hiện cơ sở tri thức của bên em không có chương trình giảm riêng nào khác cho Vector M2 Pro, nên em không thể tự áp thêm mức giảm ngoài chính sách ạ."
+            }
+          ],
+          "summary": "Khách hỏi mua riêng Vector M2 Pro và muốn dùng khuyến mãi bundle. Agent giải thích mã M2BUNDLE chỉ áp dụng khi mua kèm ELEC_002; giá mua riêng là 990.000đ.",
+          "facts_established": {
+            "product_id": "ELEC_003",
+            "standalone_price_vnd": 990000,
+            "bundle_promo_code": "M2BUNDLE",
+            "bundle_required_product_id": "ELEC_002"
+          },
+          "facts_invalidated": {},
+          "outcome": "rejected"
+        },
+        {
+          "session_id": "CHAT_0001",
+          "channel": "chat",
+          "timestamp": "2026-09-13T09:20:00+07:00",
+          "days_later": 1,
+          "audio_path": null,
+          "customer_goal": "Xác nhận lại điều kiện khuyến mãi trước khi mua.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Nếu em mua thêm bàn phím K87 thì chuột còn 890 nghìn đúng không?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ đúng ạ. Mã M2BUNDLE giảm 100.000đ cho Vector M2 Pro khi mua kèm KeyForge K87, nên giá chuột còn 890.000đ trong thời gian khuyến mãi còn hiệu lực."
+            }
+          ],
+          "summary": "Khách xác nhận điều kiện bundle và được nhắc đúng giá 890.000đ khi mua kèm ELEC_002.",
+          "facts_established": {
+            "bundle_condition_accepted": true
+          },
+          "facts_invalidated": {},
+          "outcome": "resolved"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CHAT_0001",
+        "must_carry_over": [
+          "product_id",
+          "standalone_price_vnd",
+          "bundle_promo_code",
+          "bundle_required_product_id"
+        ],
+        "must_not_ask": [
+          "product_id"
+        ],
+        "success_if": {
+          "tool_called": null,
+          "args_match": null,
+          "response_requirements": [
+            "Không áp dụng giá 890.000đ nếu thiếu ELEC_002.",
+            "Xác nhận đúng điều kiện bundle khi khách hỏi lại."
+          ]
+        },
+        "ground_truth_facts": {
+          "standalone_price_vnd": 990000,
+          "bundle_price_vnd": 890000,
+          "bundle_required_product_id": "ELEC_002",
+          "promo_expiry": "2026-09-20"
+        }
+      },
+      "scenario": "so_gia"
+    },
+    {
+      "scenario_id": "SC-003",
+      "edge_case": "mind_change",
+      "customer": {
+        "id": "CUS_0003",
+        "name": "Lê Thu Trang",
+        "phone": "0903******",
+        "address": "Quận **, Hà Nội",
+        "persona": "khach_doi_size_khieu_nai",
+        "dialect": "northern",
+        "profile": {
+          "preferred_product_id": "ELEC_005"
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0004",
+          "channel": "call",
+          "timestamp": "2026-09-12T15:00:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Chọn NovaFit S3 màu đen đêm size S/M.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Chị lấy NovaFit S3 màu đen đêm, dây S/M nhé."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ màu đen đêm size S/M hiện còn hàng. Giá là 2.290.000đ và đang tặng thêm 1 dây silicone với mã FITSTRAP đến ngày 25/09/2026."
+            }
+          ],
+          "summary": "Khách chọn NovaFit S3 màu đen đêm, dây S/M.",
+          "facts_established": {
+            "product_id": "ELEC_005",
+            "color": "đen đêm",
+            "strap_size": "S/M",
+            "price_vnd": 2290000
+          },
+          "facts_invalidated": {},
+          "outcome": "callback_scheduled"
+        },
+        {
+          "session_id": "CALL_0005",
+          "channel": "call",
+          "timestamp": "2026-09-13T11:00:00+07:00",
+          "days_later": 1,
+          "audio_path": null,
+          "customer_goal": "Đổi lựa chọn sang màu bạc size M/L.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Chị đổi ý rồi, lấy màu bạc dây M/L thay cho màu đen hôm qua nhé."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em cập nhật lựa chọn mới là NovaFit S3 màu bạc, dây M/L. Lựa chọn màu đen đêm size S/M trước đó sẽ không còn được dùng để chốt đơn."
+            }
+          ],
+          "summary": "Khách thay đổi lựa chọn từ đen đêm S/M sang bạc M/L.",
+          "facts_established": {
+            "color": "bạc",
+            "strap_size": "M/L"
+          },
+          "facts_invalidated": {
+            "color": "đen đêm",
+            "strap_size": "S/M"
+          },
+          "outcome": "resolved"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CALL_0005",
+        "must_carry_over": [
+          "product_id",
+          "price_vnd"
+        ],
+        "must_not_ask": [
+          "product_id"
+        ],
+        "success_if": {
+          "tool_called": null,
+          "args_match": null,
+          "response_requirements": [
+            "Giữ lựa chọn mới là bạc M/L.",
+            "Không giữ đồng thời đen đêm S/M như trạng thái hiện tại."
+          ]
+        },
+        "ground_truth_facts": {
+          "silver_ml_stock": 3,
+          "price_vnd": 2290000,
+          "promotion_code": "FITSTRAP",
+          "promotion_active": true
+        }
+      },
+      "scenario": "doi_size_khieu_nai"
+    },
+    {
+      "scenario_id": "SC-004",
+      "edge_case": "conflicting_facts",
+      "customer": {
+        "id": "CUS_0004",
+        "name": "Phạm Quốc Duy",
+        "phone": "0938******",
+        "address": null,
+        "persona": "khach_do_du_hoi_nguoi_nha",
+        "dialect": "southern",
+        "profile": {
+          "budget_vnd": 2500000,
+          "storage_need": "1TB"
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0006",
+          "channel": "call",
+          "timestamp": "2026-09-12T16:15:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Tìm SSD 1TB trong ngân sách 2,5 triệu.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Anh cần SSD rời 1TB, ngân sách khoảng 2 triệu rưỡi."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ FlashCore X1 1TB phù hợp. Giá niêm yết 2.190.000đ, hiện có mã SSD100 còn 2.090.000đ đến ngày 18/09/2026."
+            }
+          ],
+          "summary": "Khách cần SSD 1TB, ngân sách 2,5 triệu; được tư vấn FlashCore X1 giá sau khuyến mãi 2.090.000đ.",
+          "facts_established": {
+            "product_id": "ELEC_007",
+            "budget_vnd": 2500000,
+            "capacity": "1TB",
+            "quoted_price_vnd": 2090000
+          },
+          "facts_invalidated": {},
+          "outcome": "callback_scheduled"
+        },
+        {
+          "session_id": "CALL_0007",
+          "channel": "call",
+          "timestamp": "2026-09-14T10:00:00+07:00",
+          "days_later": 2,
+          "audio_path": null,
+          "customer_goal": "Khách sửa lại ngân sách xuống còn 2 triệu.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Hôm trước anh nói nhầm ngân sách, giờ anh chỉ có tối đa 2 triệu thôi."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em cập nhật ngân sách hiện tại của anh là tối đa 2.000.000đ. FlashCore X1 hiện vẫn là 2.090.000đ sau mã SSD100, nên đang vượt ngân sách mới 90.000đ."
+            }
+          ],
+          "summary": "Khách sửa ngân sách từ 2,5 triệu xuống 2 triệu. Giá FlashCore X1 sau khuyến mãi vẫn 2.090.000đ và vượt ngân sách mới.",
+          "facts_established": {
+            "budget_vnd": 2000000
+          },
+          "facts_invalidated": {
+            "budget_vnd": 2500000
+          },
+          "outcome": "resolved"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CALL_0007",
+        "must_carry_over": [
+          "product_id",
+          "capacity",
+          "quoted_price_vnd"
+        ],
+        "must_not_ask": [
+          "capacity",
+          "product_id"
+        ],
+        "success_if": {
+          "tool_called": null,
+          "args_match": null,
+          "response_requirements": [
+            "Dùng ngân sách mới 2.000.000đ.",
+            "Không tiếp tục coi 2.500.000đ là ngân sách hiện tại."
+          ]
+        },
+        "ground_truth_facts": {
+          "current_budget_vnd": 2000000,
+          "final_price_vnd": 2090000,
+          "difference_vnd": 90000
+        }
+      },
+      "scenario": "do_du_hoi_nguoi_nha"
+    },
+    {
+      "scenario_id": "SC-005",
+      "edge_case": "expired_promo",
+      "customer": {
+        "id": "CUS_0005",
+        "name": "Võ Hoàng Nam",
+        "phone": "0974******",
+        "address": null,
+        "persona": "khach_so_gia",
+        "dialect": "central",
+        "profile": {
+          "interest": "SSD di động 1TB"
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0008",
+          "channel": "call",
+          "timestamp": "2026-09-17T09:30:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Hỏi FlashCore X1 trước khi mã SSD100 hết hạn.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "SSD FlashCore X1 đang còn mã giảm 100 nghìn đúng không em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ đúng, mã SSD100 giảm 100.000đ, giá còn 2.090.000đ và hết hạn ngày 18/09/2026."
+            },
+            {
+              "speaker": "customer",
+              "text": "Để anh suy nghĩ thêm rồi gọi lại."
+            }
+          ],
+          "summary": "Khách được báo mã SSD100 hết hạn 18/09/2026.",
+          "facts_established": {
+            "product_id": "ELEC_007",
+            "promo_code": "SSD100",
+            "promo_expiry": "2026-09-18",
+            "promo_price_vnd": 2090000
+          },
+          "facts_invalidated": {},
+          "outcome": "callback_scheduled"
+        },
+        {
+          "session_id": "CALL_0009",
+          "channel": "call",
+          "timestamp": "2026-09-19T10:15:00+07:00",
+          "days_later": 2,
+          "audio_path": null,
+          "customer_goal": "Yêu cầu áp lại mã SSD100 sau khi đã hết hạn.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Hôm trước em báo anh giá 2 triệu 90, hôm nay anh mua thì giữ giá đó cho anh nhé."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ mã SSD100 đã hết hạn ngày 18/09/2026 nên em không thể áp lại mức giá 2.090.000đ. Theo cơ sở tri thức hiện tại, giá niêm yết của FlashCore X1 là 2.190.000đ."
+            }
+          ],
+          "summary": "Khách yêu cầu dùng lại mã SSD100 sau ngày hết hạn; agent từ chối đúng chính sách và báo giá niêm yết.",
+          "facts_established": {
+            "current_price_vnd": 2190000,
+            "promo_active": false
+          },
+          "facts_invalidated": {
+            "promo_price_vnd": 2090000
+          },
+          "outcome": "resolved"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CALL_0009",
+        "must_carry_over": [
+          "product_id",
+          "promo_code",
+          "promo_expiry"
+        ],
+        "must_not_ask": [
+          "product_id"
+        ],
+        "success_if": {
+          "tool_called": null,
+          "args_match": null,
+          "response_requirements": [
+            "Không áp dụng SSD100 sau 18/09/2026.",
+            "Không tự gia hạn khuyến mãi.",
+            "Báo đúng giá niêm yết 2.190.000đ."
+          ]
+        },
+        "ground_truth_facts": {
+          "price_vnd": 2190000,
+          "expired_promo_code": "SSD100",
+          "promo_active": false
+        }
+      },
+      "scenario": "so_gia"
+    },
+    {
+      "scenario_id": "SC-006",
+      "edge_case": "out_of_catalog",
+      "customer": {
+        "id": "CUS_0006",
+        "name": "Đặng Gia Hân",
+        "phone": "0965******",
+        "address": null,
+        "persona": "khach_do_du_hoi_nguoi_nha",
+        "dialect": "southern",
+        "profile": {
+          "interest": "router Wi-Fi 6"
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0010",
+          "channel": "call",
+          "timestamp": "2026-09-12T18:00:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Hỏi NetCore AX3000 cho nhà khoảng 100m2.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Nhà chị khoảng 100m2, NetCore AX3000 dùng ổn không em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ theo thông tin hiện có, mẫu này được khuyến nghị cho diện tích tối đa khoảng 120m² tùy tường chắn và mức độ nhiễu, hỗ trợ tối đa khoảng 40 thiết bị kết nối đồng thời."
+            }
+          ],
+          "summary": "Khách hỏi khả năng phủ sóng của NetCore AX3000 cho nhà 100m2.",
+          "facts_established": {
+            "product_id": "ELEC_006",
+            "customer_area_m2": 100
+          },
+          "facts_invalidated": {},
+          "outcome": "resolved"
+        },
+        {
+          "session_id": "CHAT_0002",
+          "channel": "chat",
+          "timestamp": "2026-09-13T08:00:00+07:00",
+          "days_later": 1,
+          "audio_path": null,
+          "customer_goal": "Hỏi router có WPA3 hay không, nhưng base knowledge không có thông tin này.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Mẫu này có WPA3 không em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ hiện cơ sở tri thức em có chưa ghi thông tin về WPA3 cho NetCore AX3000, nên em chưa thể xác nhận tính năng này ạ."
+            }
+          ],
+          "summary": "Khách hỏi WPA3, nhưng base knowledge không có dữ liệu; agent không suy đoán.",
+          "facts_established": {},
+          "facts_invalidated": {},
+          "outcome": "resolved"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CHAT_0002",
+        "must_carry_over": [
+          "product_id"
+        ],
+        "must_not_ask": [
+          "product_id"
+        ],
+        "success_if": {
+          "tool_called": null,
+          "args_match": null,
+          "response_requirements": [
+            "Phải nói chưa có dữ liệu xác nhận WPA3.",
+            "Không được khẳng định router có hoặc không có WPA3."
+          ]
+        },
+        "ground_truth_facts": {
+          "wifi_standard": "Wi-Fi 6 / 802.11ax",
+          "mesh_support": true,
+          "wpa3": null
+        }
+      },
+      "scenario": "hoi_nhieu_khong_mua"
+    },
+    {
+      "scenario_id": "SC-007",
+      "edge_case": "out_of_stock",
+      "customer": {
+        "id": "CUS_0007",
+        "name": "Ngô Minh Tú",
+        "phone": "0908******",
+        "address": null,
+        "persona": "khach_so_gia",
+        "dialect": "southern",
+        "profile": {
+          "need": "sạc USB-C 65W"
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0011",
+          "channel": "call",
+          "timestamp": "2026-09-12T19:00:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Muốn mua ChargeMax GaN 65W.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Cho anh đặt ChargeMax GaN 65W, mai giao được không?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ hiện ChargeMax GaN 65W đang hết hàng, số lượng tồn kho là 0. Em không thể cam kết giao ngày mai hoặc tự hẹn ngày có hàng ạ."
+            }
+          ],
+          "summary": "Khách muốn đặt ChargeMax GaN 65W nhưng sản phẩm đang hết hàng.",
+          "facts_established": {
+            "product_id": "ELEC_008",
+            "stock_quantity": 0,
+            "stock_status": "hết hàng"
+          },
+          "facts_invalidated": {},
+          "outcome": "rejected"
+        },
+        {
+          "session_id": "CHAT_0003",
+          "channel": "chat",
+          "timestamp": "2026-09-13T13:00:00+07:00",
+          "days_later": 1,
+          "audio_path": null,
+          "customer_goal": "Hỏi lại ngày có hàng.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Vậy khoảng mấy ngày nữa có hàng lại em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ hiện cơ sở tri thức chưa có ngày nhập hàng dự kiến, nên em chưa thể đưa ra thời gian cụ thể ạ."
+            }
+          ],
+          "summary": "Khách hỏi ETA nhập hàng, nhưng knowledge base không có dữ liệu.",
+          "facts_established": {},
+          "facts_invalidated": {},
+          "outcome": "resolved"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CHAT_0003",
+        "must_carry_over": [
+          "product_id",
+          "stock_quantity",
+          "stock_status"
+        ],
+        "must_not_ask": [
+          "product_id"
+        ],
+        "success_if": {
+          "tool_called": null,
+          "args_match": null,
+          "response_requirements": [
+            "Không được tạo đơn như sản phẩm còn hàng.",
+            "Không được tự bịa ngày nhập hàng.",
+            "Phải giữ trạng thái hết hàng."
+          ]
+        },
+        "ground_truth_facts": {
+          "price_vnd": 690000,
+          "stock_quantity": 0,
+          "stock_status": "hết hàng"
+        }
+      },
+      "scenario": "hoi_nhieu_khong_mua"
+    },
+    {
+      "scenario_id": "SC-008",
+      "scenario": "doi_size_khieu_nai",
+      "edge_case": "post_purchase_complaint",
+      "customer": {
+        "id": "CUS_0008",
+        "name": "Bùi Thanh Mai",
+        "phone": "0886******",
+        "address": "Quận **, Hà Nội",
+        "persona": "khach_doi_size_khieu_nai",
+        "dialect": "northern",
+        "profile": {
+          "owned_product_id": "ELEC_005"
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0012",
+          "channel": "call",
+          "timestamp": "2026-09-10T10:00:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Báo đã mua NovaFit S3 nhưng muốn đổi biến thể dây từ S/M sang M/L.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Chị mua NovaFit S3 màu bạc dây S/M hôm trước rồi, nhưng đeo hơi chật. Chị muốn đổi sang dây M/L được không em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ theo chính sách đổi trả, trường hợp thay đổi nhu cầu trong 7 ngày có thể được xem xét nếu thiết bị đã được đặt lại, hủy liên kết tài khoản và còn đầy đủ phụ kiện. Em ghi nhận chị muốn đổi từ dây S/M sang M/L ạ."
+            },
+            {
+              "speaker": "customer",
+              "text": "Ừ, chị mới nhận được 4 ngày thôi."
+            }
+          ],
+          "summary": "Khách đã mua NovaFit S3 màu bạc dây S/M, sau 4 ngày muốn đổi sang dây M/L do đeo chật.",
+          "facts_established": {
+            "product_id": "ELEC_005",
+            "current_color": "bạc",
+            "current_strap_size": "S/M",
+            "requested_strap_size": "M/L",
+            "days_since_delivery": 4
+          },
+          "facts_invalidated": {},
+          "outcome": "escalated"
+        },
+        {
+          "session_id": "CHAT_0004",
+          "channel": "chat",
+          "timestamp": "2026-09-11T15:30:00+07:00",
+          "days_later": 1,
+          "audio_path": null,
+          "customer_goal": "Theo dõi yêu cầu đổi dây M/L.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Hôm qua chị đã báo đổi dây đồng hồ từ S/M sang M/L, bên em xử lý giúp chị nhé."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em đã có thông tin chị đang dùng NovaFit S3 màu bạc, dây S/M và muốn đổi sang M/L. Trường hợp này cần kiểm tra điều kiện sản phẩm và phụ kiện trước khi xác nhận đổi ạ."
+            }
+          ],
+          "summary": "Khách theo dõi yêu cầu đổi dây M/L. Agent giữ đúng thông tin phiên trước và không hỏi lại sản phẩm hay size hiện tại.",
+          "facts_established": {
+            "follow_up_requested": true
+          },
+          "facts_invalidated": {},
+          "outcome": "escalated"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CHAT_0004",
+        "must_carry_over": [
+          "product_id",
+          "current_color",
+          "current_strap_size",
+          "requested_strap_size",
+          "days_since_delivery"
+        ],
+        "must_not_ask": [
+          "product_id",
+          "current_color",
+          "current_strap_size",
+          "requested_strap_size"
+        ],
+        "success_if": {
+          "tool_called": "support.return_request",
+          "args_match": {
+            "product_id": "ELEC_005",
+            "reason": "change_variant"
+          },
+          "response_requirements": [
+            "Không yêu cầu lại size hiện tại và size muốn đổi.",
+            "Không hứa đổi ngay trước khi kiểm tra điều kiện đổi trả."
+          ]
+        },
+        "ground_truth_facts": {
+          "change_of_mind_days": 7,
+          "days_since_delivery": 4,
+          "requested_variant_stock": 3
+        }
+      }
+    },
+    {
+      "scenario_id": "SC-009",
+      "scenario": "hoi_nhieu_khong_mua",
+      "edge_case": "normal",
+      "customer": {
+        "id": "CUS_0009",
+        "name": "Hoàng Đức Anh",
+        "phone": "0926******",
+        "address": null,
+        "persona": "khach_hoi_nhieu_khong_mua",
+        "dialect": "northern",
+        "profile": {
+          "interest": "tai nghe không dây",
+          "budget_vnd": 2000000
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0013",
+          "channel": "call",
+          "timestamp": "2026-09-12T09:40:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Hỏi chi tiết Auralite H5 nhưng chưa có ý định mua ngay.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Tai nghe Auralite H5 pin được bao lâu em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ thời lượng pin được công bố là 45 giờ ạ."
+            },
+            {
+              "speaker": "customer",
+              "text": "Có chống ồn không, sạc cổng gì, có dùng dây được không?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ có chống ồn chủ động, sạc USB-C và hỗ trợ kết nối 3.5mm audio ạ."
+            },
+            {
+              "speaker": "customer",
+              "text": "Màu trắng còn bao nhiêu cái?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ màu trắng hiện còn 10 sản phẩm."
+            },
+            {
+              "speaker": "customer",
+              "text": "Giá cuối cùng bao nhiêu?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ giá niêm yết 1.890.000đ, hiện mã H5SAVE200 giảm còn 1.690.000đ đến ngày 30/09/2026."
+            },
+            {
+              "speaker": "customer",
+              "text": "Ừ anh hỏi vậy thôi, chưa mua đâu em."
+            }
+          ],
+          "summary": "Khách hỏi nhiều thông tin về Auralite H5 gồm pin, ANC, cổng sạc, kết nối dây, tồn kho màu trắng và giá nhưng chưa mua.",
+          "facts_established": {
+            "product_id": "ELEC_001",
+            "preferred_color": "trắng",
+            "quoted_price_vnd": 1690000,
+            "purchase_intent": "not_ready"
+          },
+          "facts_invalidated": {},
+          "outcome": "rejected"
+        },
+        {
+          "session_id": "CHAT_0005",
+          "channel": "chat",
+          "timestamp": "2026-09-14T20:15:00+07:00",
+          "days_later": 2,
+          "audio_path": null,
+          "customer_goal": "Hỏi lại về bảo hành nhưng vẫn chưa mua.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Con H5 hôm trước anh hỏi bảo hành bao lâu ấy em?"
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ Auralite H5 bảo hành 12 tháng ạ."
+            },
+            {
+              "speaker": "customer",
+              "text": "Ok, anh tham khảo thêm đã."
+            }
+          ],
+          "summary": "Khách quay lại hỏi thời hạn bảo hành Auralite H5 nhưng vẫn chưa quyết định mua.",
+          "facts_established": {
+            "purchase_intent": "still_not_ready"
+          },
+          "facts_invalidated": {},
+          "outcome": "rejected"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CHAT_0005",
+        "must_carry_over": [
+          "product_id",
+          "preferred_color",
+          "quoted_price_vnd",
+          "purchase_intent"
+        ],
+        "must_not_ask": [
+          "product_id"
+        ],
+        "success_if": {
+          "tool_called": null,
+          "args_match": null,
+          "response_requirements": [
+            "Trả lời đúng bảo hành 12 tháng.",
+            "Không ép chốt đơn hoặc tự suy diễn khách đã sẵn sàng mua."
+          ]
+        },
+        "ground_truth_facts": {
+          "warranty_months": 12,
+          "battery_hours": 45,
+          "white_stock": 10,
+          "final_price_vnd": 1690000
+        }
+      }
+    },
+    {
+      "scenario_id": "SC-010",
+      "scenario": "goi_lan_3_mat_kien_nhan",
+      "edge_case": "service_repetition",
+      "customer": {
+        "id": "CUS_0010",
+        "name": "Nguyễn Văn Phúc",
+        "phone": "0941******",
+        "address": "Quận **, TP. Hồ Chí Minh",
+        "persona": "khach_goi_lan_3_mat_kien_nhan",
+        "dialect": "southern",
+        "profile": {
+          "owned_product_id": "ELEC_002"
+        }
+      },
+      "sessions": [
+        {
+          "session_id": "CALL_0014",
+          "channel": "call",
+          "timestamp": "2026-09-09T09:00:00+07:00",
+          "days_later": 0,
+          "audio_path": null,
+          "customer_goal": "Báo lỗi kết nối 2.4GHz của KeyForge K87.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Bàn phím K87 của anh kết nối 2.4GHz cứ chập chờn em ơi."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em ghi nhận lỗi kết nối 2.4GHz. Anh cho em xin mã đơn hoặc số sê-ri để bên em tra cứu bảo hành ạ."
+            },
+            {
+              "speaker": "customer",
+              "text": "Mã đơn ORD-9010 nhé."
+            }
+          ],
+          "summary": "Lần 1: khách báo lỗi 2.4GHz của KeyForge K87 và cung cấp mã đơn ORD-9010.",
+          "facts_established": {
+            "product_id": "ELEC_002",
+            "order_id": "ORD-9010",
+            "issue": "2.4GHz_connection_unstable"
+          },
+          "facts_invalidated": {},
+          "outcome": "escalated"
+        },
+        {
+          "session_id": "CALL_0015",
+          "channel": "call",
+          "timestamp": "2026-09-10T14:30:00+07:00",
+          "days_later": 1,
+          "audio_path": null,
+          "customer_goal": "Gọi lần 2 theo dõi xử lý lỗi.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Anh gọi lại vụ bàn phím K87 lỗi 2.4GHz hôm qua, mã đơn ORD-9010 đó em."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em đã thấy thông tin lỗi kết nối 2.4GHz của đơn ORD-9010. Em ghi nhận anh đang theo dõi yêu cầu hỗ trợ kỹ thuật ạ."
+            }
+          ],
+          "summary": "Lần 2: khách theo dõi cùng lỗi và cùng mã đơn. Không phát sinh thông tin sản phẩm mới.",
+          "facts_established": {
+            "follow_up_count": 2
+          },
+          "facts_invalidated": {},
+          "outcome": "escalated"
+        },
+        {
+          "session_id": "CALL_0016",
+          "channel": "call",
+          "timestamp": "2026-09-12T08:30:00+07:00",
+          "days_later": 2,
+          "audio_path": null,
+          "customer_goal": "Gọi lần 3, đã mất kiên nhẫn vì phải nhắc lại vấn đề.",
+          "turns": [
+            {
+              "speaker": "customer",
+              "text": "Anh gọi lần thứ ba rồi đó em. Bàn phím K87 lỗi 2.4GHz, mã đơn ORD-9010. Anh không muốn phải kể lại từ đầu nữa."
+            },
+            {
+              "speaker": "agent",
+              "text": "Dạ em đã có đầy đủ thông tin: KeyForge K87, mã đơn ORD-9010, lỗi kết nối 2.4GHz và đây là lần liên hệ thứ ba. Em sẽ tiếp tục xử lý từ thông tin hiện có, không yêu cầu anh cung cấp lại những nội dung này ạ."
+            },
+            {
+              "speaker": "customer",
+              "text": "Ừ, giờ giúp anh đẩy xử lý tiếp đi."
+            }
+          ],
+          "summary": "Lần 3: khách mất kiên nhẫn vì phải liên hệ nhiều lần. Agent phải nhận diện toàn bộ lịch sử và không hỏi lại thông tin đã có.",
+          "facts_established": {
+            "follow_up_count": 3,
+            "customer_sentiment": "impatient"
+          },
+          "facts_invalidated": {},
+          "outcome": "escalated"
+        }
+      ],
+      "benchmark": {
+        "target_session_id": "CALL_0016",
+        "must_carry_over": [
+          "product_id",
+          "order_id",
+          "issue",
+          "follow_up_count"
+        ],
+        "must_not_ask": [
+          "product_id",
+          "order_id",
+          "issue"
+        ],
+        "success_if": {
+          "tool_called": "support.escalate",
+          "args_match": {
+            "order_id": "ORD-9010",
+            "product_id": "ELEC_002",
+            "reason": "repeated_unresolved_contact"
+          },
+          "response_requirements": [
+            "Phải nhận diện đây là lần liên hệ thứ ba.",
+            "Không yêu cầu khách kể lại vấn đề hoặc cung cấp lại mã đơn.",
+            "Phản hồi ngắn gọn, ưu tiên tiếp tục xử lý thay vì lặp lại quy trình khám phá."
+          ]
+        },
+        "ground_truth_facts": {
+          "warranty_months": 18,
+          "issue": "2.4GHz_connection_unstable",
+          "contact_count": 3
+        }
+      }
+    }
+  ],
+  "required_scenarios": {
+    "do_du_hoi_nguoi_nha": "Khách do dự cần hỏi người nhà",
+    "so_gia": "Khách so giá",
+    "doi_size_khieu_nai": "Khách đã mua gọi lại đổi size/biến thể hoặc khiếu nại",
+    "hoi_nhieu_khong_mua": "Khách hỏi nhiều nhưng không mua",
+    "goi_lan_3_mat_kien_nhan": "Khách gọi lần 3 và đã mất kiên nhẫn"
+  },
+  "scenario_coverage": {
+    "do_du_hoi_nguoi_nha": [
+      "SC-001",
+      "SC-004"
+    ],
+    "so_gia": [
+      "SC-002",
+      "SC-005"
+    ],
+    "doi_size_khieu_nai": [
+      "SC-003",
+      "SC-008"
+    ],
+    "hoi_nhieu_khong_mua": [
+      "SC-006",
+      "SC-007",
+      "SC-009"
+    ],
+    "goi_lan_3_mat_kien_nhan": [
+      "SC-010"
+    ]
+  }
+}
