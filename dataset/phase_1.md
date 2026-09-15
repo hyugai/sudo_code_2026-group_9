@@ -4,7 +4,7 @@
 
 | Item | Detail |
 |---|---|
-| **Status** | ◐ In Progress |
+| **Status** | ✓ Done |
 | **Objective** | Define the industry and data scope for the project. |
 
 ## Status Legend
@@ -28,8 +28,8 @@
 | Data Source | ◐ In Progress |
 | Language | ✓ |
 | Multi-session | ✓ |
-| Multi-channel | ✓ |
-| PII | ✓ |
+| Multi-channel | ◐ In Progress |
+| PII | ◐ In Progress |
 
 ### 1. Industry
 
@@ -97,13 +97,12 @@ Monitors
 ### 6. Data Source
 
 
-Use a combination of:
+| Source | Proportion |
+|---|---|
+| Existing/reference data | |
+| AI-generated synthetic data | |
+| Manually defined synthetic data | |
 
-```text
-Existing/reference data
-AI-generated synthetic data
-Manually defined synthetic data
-```
 
 ### 7. Language
 
@@ -134,6 +133,12 @@ The same user can continue across different platforms.
 ```text
 Phone → Zalo → Facebook Messenger
 ```
+
+Q/A: How many channels are sufficient enough for M1 and M2 ?
+| | Min | Max |
+|---|---|--|
+| M1 | ? |
+| M2 | ? |
 
 ### 10. PII
 
