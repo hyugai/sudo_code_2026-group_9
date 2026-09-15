@@ -24,7 +24,7 @@
 | Business Context | ✓ |
 | Channels | ✓ |
 | Datasets | ✓ |
-| Product Scope | ✓ |
+| Product Scope | ◐ In Progress |
 | Data Source | ◐ In Progress |
 | Language | ✓ |
 | Multi-session | ✓ |
@@ -47,7 +47,14 @@ Used consistently across Policy, Catalog, and Transcript data.
 Retail / e-commerce consultation and customer support
 ```
 
-Covers sales, product questions, follow-up, returns, warranty, and complaints.
+| Context | Available |
+|---|:---:|
+| Sales | ✓ |
+| Product Q/A | ✓ |
+| Follow-up | ✓ |
+| Returns | ✓ |
+| Warranty | ✓ |
+| Complaints | ✓ |
 
 ### 3. Channels
 
@@ -71,6 +78,12 @@ Website chat
 ### 5. Product Scope
 
 
+| Dataset | Categories |
+|---|:---:|
+| Mock | ? |
+| M1 | ? |
+| M2 | ? |
+
 Target:
 
 ```text
@@ -80,25 +93,14 @@ Target:
 Main categories:
 
 ```text
-Wireless headphones
-Mechanical keyboards
-Computer mice
-Power banks
-Smartwatches
-Wi-Fi routers
-Portable SSDs
-USB-C chargers
-Webcams
-USB-C hubs
-Bluetooth speakers
-Monitors
+...
 ```
 
 ### 6. Data Source
 
 
-| Source | Proportion |
-|---|---|
+| Source | Proportion (%) |
+|---|:---:|
 | Existing/reference data | ? |
 | AI-generated synthetic data | ? |
 | Manually defined synthetic data | ? |
@@ -136,7 +138,7 @@ Phone → Zalo → Facebook Messenger
 
 Q/A: How many channels are sufficient enough for M1 and M2 ?
 | | Min | Max |
-|---|---|--|
+|---|:---:|:---:|
 | M1 | ? | ? |
 | M2 | ? | ? |
 
