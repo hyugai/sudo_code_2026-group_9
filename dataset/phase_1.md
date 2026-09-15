@@ -4,7 +4,7 @@
 
 | Item | Detail |
 |---|---|
-| **Status** | ✓ Done |
+| **Status** | ◐ In Progress |
 | **Objective** | Define the industry and data scope for the project. |
 
 ## Status Legend
@@ -99,9 +99,9 @@ Monitors
 
 | Source | Proportion |
 |---|---|
-| Existing/reference data | |
-| AI-generated synthetic data | |
-| Manually defined synthetic data | |
+| Existing/reference data | ? |
+| AI-generated synthetic data | ? |
+| Manually defined synthetic data | ? |
 
 
 ### 7. Language
@@ -137,8 +137,8 @@ Phone → Zalo → Facebook Messenger
 Q/A: How many channels are sufficient enough for M1 and M2 ?
 | | Min | Max |
 |---|---|--|
-| M1 | ? |
-| M2 | ? |
+| M1 | ? | ? |
+| M2 | ? | ? |
 
 ### 10. PII
 
