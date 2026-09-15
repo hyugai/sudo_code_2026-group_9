@@ -2,54 +2,54 @@
 
 ## Status Legend
 
-| Icon | Status |
+| Symbol | Status |
 |---|---|
-| ✅ | Completed |
-| 🟡 | In Progress |
-| ⬜ | Not Started |
-| 🔴 | Blocked |
+| `✓` | Done |
+| `◐` | In Progress |
+| `○` | Not Started |
+| `✗` | Blocked |
 
 ## Master Plan
 
 | Phase | Status | Phase Name |
 |---:|:---:|---|
-| 1 | ✅ | Define Domain & Data Scope |
-| 2 | ✅ | Finalize Database Schema |
-| 3 | ⬜ | Build Policy Dataset |
-| 4 | ⬜ | Build Catalog Dataset |
-| 5 | ⬜ | Generate Users |
-| 6 | ⬜ | Generate Sessions |
-| 7 | ⬜ | Generate Messages |
-| 8 | ⬜ | Validate Relationships & Data Consistency |
-| 9 | ⬜ | Scale & Finalize Dataset |
+| 1 | ◐ In Progress | Define Domain & Data Scope |
+| 2 | ◐ In Progress | Finalize Database Schema |
+| 3 | ○ Not Started | Build Policy Dataset |
+| 4 | ○ Not Started | Build Catalog Dataset |
+| 5 | ○ Not Started | Generate Users |
+| 6 | ○ Not Started | Generate Sessions |
+| 7 | ○ Not Started | Generate Messages |
+| 8 | ○ Not Started | Validate Relationships & Data Consistency |
+| 9 | ○ Not Started | Scale & Finalize Dataset |
 
 ## Phase Dependency
 
 ```text
 Phase 1
-Domain
-   ↓
+Define Domain & Data Scope
+        ↓
 Phase 2
-Database Schema
-   ↓
+Finalize Database Schema
+        ↓
  ┌───────────────┐
  ↓               ↓
 Phase 3         Phase 4
-Policies        Catalog
+Policy          Catalog
  └───────┬───────┘
          ↓
       Phase 5
-       Users
+      Users
          ↓
       Phase 6
-      Sessions
+     Sessions
          ↓
       Phase 7
-      Messages
+     Messages
          ↓
       Phase 8
-     Validation
+    Validation
          ↓
       Phase 9
-       Scaling
+      Scaling
 ```
