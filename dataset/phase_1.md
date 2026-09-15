@@ -4,7 +4,7 @@
 
 | Item | Detail |
 |---|---|
-| **Status** | ✓ Done |
+| **Status** | ◐ In Progress |
 | **Objective** | Define the industry and data scope for the project. |
 
 ## Status Legend
