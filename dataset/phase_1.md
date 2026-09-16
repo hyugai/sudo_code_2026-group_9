@@ -78,7 +78,7 @@ Website chat
 ### 5. Product Scope
 
 
-| Dataset | Categories |
+| Requirement | Categories |
 |---|:---:|
 | Mock | ? |
 | M1 | ? |
