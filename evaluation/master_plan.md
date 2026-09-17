@@ -22,3 +22,11 @@
 | 7 | ○ Not Started | Generate Messages |
 | 8 | ○ Not Started | Validate Relationships & Data Consistency |
 | 9 | ○ Not Started | Scale & Finalize Dataset |
+
+## Phase Dependency
+
+```text
+Phase 1
+Define evaluation
+
+```
