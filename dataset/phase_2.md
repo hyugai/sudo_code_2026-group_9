@@ -117,6 +117,7 @@ warranty
 promotion
 privacy
 customer_support
+Rules for communicating with customers.
 ```
 
 ---
