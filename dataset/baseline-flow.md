@@ -1,3 +1,5 @@
+## Business context
+
 ``` mermaid
 flowchart LR
     A[Customer Contacts]
@@ -26,6 +28,54 @@ flowchart LR
 | Promotion information | Required | Required, including expiration/validity handling |
 | Inventory / availability | Required | Required, including out-of-stock cases |
 
+> catalog.json
+
+```json
+{
+  "products": [
+    {
+      "sku": "",
+      "industry": "",
+      "category": "",
+      "name": "",
+      "brand": "",
+      "description": "",
+      "price": {
+        "amount": 0,
+        "currency": "VND"
+      },
+      "specifications": {},
+      "inventory": {
+        "quantity": 0,
+        "status": "",
+        "updated_at": ""
+      },
+      "promotion_ids": [],
+      "active": true
+    }
+  ]
+}
+```
+
+> promotions.json
+
+```json
+{
+  "promotions": [
+    {
+      "promotion_id": "",
+      "name": "",
+      "description": "",
+      "discount_type": "",
+      "discount_value": 0,
+      "valid_from": "",
+      "valid_until": "",
+      "active": true
+    }
+  ]
+}
+```
+
 ## Policy
 
 | Requirement | M1 | M2 |
@@ -35,34 +85,28 @@ flowchart LR
 | Product / business policy | Required | Required |
 | Policy document count | **Not specified** | **Not specified** |
 
-> catalog.json
+> policies.json
 
-Product
-├── sku
-├── industry
-├── category
-├── name
-├── brand
-├── description
-├── price
-│   ├── amount
-│   └── currency
-├── specifications {}
-├── inventory
-│   ├── quantity
-│   ├── status
-│   └── updated_at
-├── promotion_ids []
-└── active
+```json
+{
+  "policies": [
+    {
+      "policy_id": "",
+      "type": "",
+      "title": "",
+      "description": "",
 
-> promotions.json
+      "rules": [
+        {
+          "condition": "",
+          "rule": ""
+        }
+      ],
 
-Promotion
-├── promotion_id
-├── name
-├── description
-├── discount_type
-├── discount_value
-├── valid_from
-├── valid_until
-└── active
+      "valid_from": "",
+      "valid_until": "",
+      "active": true
+    }
+  ]
+}
+```
