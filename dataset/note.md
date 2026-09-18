@@ -28,7 +28,7 @@ flowchart LR
 | Promotion information | Required | Required, including expiration/validity handling |
 | Inventory / availability | Required | Required, including out-of-stock cases |
 
-> catalog.jsonl
+> catalogs.jsonl
 
 ```jsonl
 {
