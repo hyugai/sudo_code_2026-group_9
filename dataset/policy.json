@@ -13,30 +13,6 @@
   "policy_owner": "Bộ phận Vận hành và Chăm sóc khách hàng",
   "scope": "Dữ liệu mô phỏng phục vụ catalog, RAG, đánh giá và hội thoại telesale đồ điện tử gia dụng.",
   "legal_notice": "Đây là chính sách giả lập cho mục đích xây dựng dataset và demo hệ thống, không phải chính sách thương mại hoặc tư vấn pháp lý ngoài đời thực.",
-  "reference_sources": [
-    {
-      "type": "catalog_dataset",
-      "location": "D:/sudo_code_2026-group_9/dataset/products.jsonl",
-      "used_for": "Xác định 40 SKU, ngành hàng, nhóm sản phẩm, giá niêm yết, đặc tính và trạng thái tồn kho."
-    },
-    {
-      "type": "promotion_dataset",
-      "location": "D:/sudo_code_2026-group_9/dataset/promotions.jsonl",
-      "used_for": "Xác định 40 chương trình giảm 10% có hiệu lực từ 01/09/2026 đến hết 30/09/2026."
-    },
-    {
-      "type": "external_reference",
-      "url": "https://www.dienmayxanh.com/chinh-sach-bao-hanh-san-pham",
-      "consulted_at": "2026-09-18",
-      "used_for": "Tham khảo cách phân nhóm hàng điện và không điện, điều kiện đổi trả, bảo hành cam kết, xử lý phụ kiện và xác minh OTP."
-    },
-    {
-      "type": "external_reference",
-      "url": "https://www.dienmayxanh.com/kinh-nghiem-hay/chinh-sach-giao-hang-lap-dat-1261528",
-      "consulted_at": "2026-09-18",
-      "used_for": "Tham khảo cách tách hàng gia dụng giao tiêu chuẩn và hàng cần giao kèm lắp đặt."
-    }
-  ],
   "adaptation_note": "Các nguồn bên ngoài chỉ được dùng để tham khảo cấu trúc và nguyên tắc. Mốc thời gian, phí, phạm vi và phương án xử lý trong file này là chính sách mô phỏng riêng của dataset, không được giới thiệu là chính sách chính thức của Điện Máy XANH.",
   "catalog_snapshot": {
     "as_of": "2026-09-18",
