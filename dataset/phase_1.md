@@ -21,27 +21,23 @@
 | Requirement | Status |
 |---|:---:|
 | Industry | ✓ |
-| Business Context | ✓ |
+| Business Context | ◐ In Progress |
 | Channels | ✓ |
 | Datasets | ✓ |
 | Product Scope | ◐ In Progress |
 | Data Source | ◐ In Progress |
-| Language | ✓ |
-| Multi-session | ✓ |
+| Language | ◐ In Progress |
+| Multi-session | ◐ In Progress |
 | Multi-channel | ◐ In Progress |
 | PII | ◐ In Progress |
 
 ### 1. Industry
 
-
 ```text
 Consumer Electronics & Accessories
 ```
 
-Used consistently across Policy, Catalog, and Transcript data.
-
 ### 2. Business Context
-
 
 ```text
 Retail / e-commerce consultation and customer support
@@ -61,8 +57,6 @@ Retail / e-commerce consultation and customer support
 
 ```text
 Phone
-Zalo
-Facebook Messenger
 Website chat
 ```
 
