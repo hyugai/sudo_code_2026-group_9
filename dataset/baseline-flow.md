@@ -28,51 +28,43 @@ flowchart LR
 | Promotion information | Required | Required, including expiration/validity handling |
 | Inventory / availability | Required | Required, including out-of-stock cases |
 
-> catalog.json
+> catalog.jsonl
 
-```json
+```jsonl
 {
-  "products": [
-    {
-      "sku": "",
-      "industry": "",
-      "category": "",
-      "name": "",
-      "brand": "",
-      "description": "",
-      "price": {
-        "amount": 0,
-        "currency": "VND"
-      },
-      "specifications": {},
-      "inventory": {
-        "quantity": 0,
-        "status": "",
-        "updated_at": ""
-      },
-      "promotion_ids": [],
-      "active": true
-    }
-  ]
+  "sku": "",
+  "industry": "",
+  "category": "",
+  "name": "",
+  "brand": "",
+  "description": "",
+  "price": {
+    "amount": 0,
+    "currency": "VND"
+  },
+  "specifications": {},
+  "inventory": {
+    "quantity": 0,
+    "status": "",
+    "updated_at": ""
+  },
+  "promotion_ids": [],
+  "active": true
 }
 ```
 
-> promotions.json
+> promotions.jsonl
 
-```json
+```jsonl
 {
-  "promotions": [
-    {
-      "promotion_id": "",
-      "name": "",
-      "description": "",
-      "discount_type": "",
-      "discount_value": 0,
-      "valid_from": "",
-      "valid_until": "",
-      "active": true
-    }
-  ]
+  "promotion_id": "",
+  "name": "",
+  "description": "",
+  "discount_type": "",
+  "discount_value": 0,
+  "valid_from": "",
+  "valid_until": "",
+  "active": true
 }
 ```
 
@@ -85,28 +77,22 @@ flowchart LR
 | Product / business policy | Required | Required |
 | Policy document count | **Not specified** | **Not specified** |
 
-> policies.json
+> policies.jsonl
 
-```json
+```jsonl
 {
-  "policies": [
+  "policy_id": "",
+  "type": "",
+  "title": "",
+  "description": "",
+  "rules": [
     {
-      "policy_id": "",
-      "type": "",
-      "title": "",
-      "description": "",
-
-      "rules": [
-        {
-          "condition": "",
-          "rule": ""
-        }
-      ],
-
-      "valid_from": "",
-      "valid_until": "",
-      "active": true
+      "condition": "",
+      "rule": ""
     }
-  ]
+  ],
+  "valid_from": "",
+  "valid_until": "",
+  "active": true
 }
 ```
