@@ -28,5 +28,7 @@
 ```text
 Phase 1
 Define evaluation
-
+        ↓
+Phase 2
+Detail metrics
 ```
