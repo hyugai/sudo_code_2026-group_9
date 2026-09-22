@@ -1,0 +1,25 @@
+{
+  "buildCommand": "cd src/web && npm install && npm run build",
+  "outputDirectory": "src/web/.next",
+  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "src/web/package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "api/**/*.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/src/web/$1"
+    }
+  ]
+}
