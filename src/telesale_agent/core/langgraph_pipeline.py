@@ -147,11 +147,11 @@ class LangGraphAgentHarness:
         )
 
         # Initialization phase
-        workflow.add_edge("identity", "retrieve")
-        workflow.add_edge("retrieve", "perceive")
+        workflow.add_edge("identity", "perceive")
         
         # Turn loop phase
-        workflow.add_edge("perceive", "call_brief")
+        workflow.add_edge("perceive", "retrieve")
+        workflow.add_edge("retrieve", "call_brief")
         workflow.add_edge("call_brief", "plan")
         
         workflow.add_edge("plan", "guardrail")
