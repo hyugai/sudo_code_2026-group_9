@@ -70,6 +70,7 @@ class LangGraphAgentHarness:
         async def node_retrieve(state: AgentState):
             ctx = _get_ctx(state)
             ctx.retrieved = await self.retrieve.retrieve(ctx)
+            ctx.state.retrieved_data = ctx.retrieved
             return {"context": ctx}
 
         async def node_call_brief(state: AgentState):
@@ -132,10 +133,25 @@ class LangGraphAgentHarness:
         workflow.add_node("persist", node_persist)
 
         # Edges
-        workflow.add_edge(START, "perceive")
-        workflow.add_edge("perceive", "identity")
+        # Conditional start: If identity is missing, do initialization first
+        def route_start(state: AgentState) -> str:
+            ctx = _get_ctx(state)
+            if not ctx.state.identity:
+                return "identity"
+            return "perceive"
+            
+        workflow.add_conditional_edges(
+            START,
+            route_start,
+            {"identity": "identity", "perceive": "perceive"}
+        )
+
+        # Initialization phase
         workflow.add_edge("identity", "retrieve")
-        workflow.add_edge("retrieve", "call_brief")
+        workflow.add_edge("retrieve", "perceive")
+        
+        # Turn loop phase
+        workflow.add_edge("perceive", "call_brief")
         workflow.add_edge("call_brief", "plan")
         
         workflow.add_edge("plan", "guardrail")
@@ -175,6 +191,13 @@ class LangGraphAgentHarness:
             raise ValueError("state and input must belong to the same conversation")
 
         context = TurnContext(input=turn_input, state=state)
+        
+        # Load initialization data into TurnContext if it exists
+        if state.identity:
+            context.identity = state.identity
+        if state.retrieved_data:
+            context.retrieved = state.retrieved_data
+            
         initial_state = {"context": context}
         
         final_state = await self.graph.ainvoke(initial_state)

@@ -12,7 +12,7 @@ class ActionPlanSchema(BaseModel):
     action: str = Field(description="The next action to take, e.g., 'respond_to_customer', 'transfer_to_human', 'call_api'")
     rationale: str = Field(description="The rationale behind this decision")
     target_intent: str | None = Field(description="The target intent if applicable", default=None)
-    response_text: str | None = Field(description="The final response text to speak/chat with the customer (must be in Vietnamese)", default=None)
+    response_text: str = Field(description="The final response text to speak/chat with the customer (must be in Vietnamese). DO NOT leave empty.")
     tool_name: str | None = Field(description="The name of the tool to call if action is 'call_api'", default=None)
     arguments: dict = Field(description="Arguments for the tool", default_factory=dict)
 

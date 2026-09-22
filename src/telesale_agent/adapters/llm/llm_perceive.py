@@ -8,7 +8,7 @@ from telesale_agent.config.settings import settings
 
 class IntentSchema(BaseModel):
     intent: str = Field(
-        description="The main intent of the customer. Must be exactly one of: ask_product, ask_return_policy, ask_shipping_policy, price_objection, complain, unknown"
+        description="The main intent of the customer. From these intent of: ask_product, ask_return_policy, ask_shipping_policy, price_objection, complain, unknown"
     )
     entities: dict = Field(
         description="Entities extracted from the utterance, e.g., {'product_name': 'headphones', 'price': 500000}", 
@@ -34,7 +34,7 @@ class LLMPerceiver(Perceiver):
         transcript = context.input.text.strip()
         
         prompt = f"""You are an advanced NLU AI system designed for a telesales call center.
-Analyze the following customer utterance and extract the main intent and relevant entities.
+Analyze the following customer utterance and extract the all the intents and relevant entities.
 The utterance is in Vietnamese, but you must output the structured JSON.
 
 Customer utterance: "{transcript}"

@@ -28,8 +28,9 @@ class MockDataRetriever(Retriever):
                                     knowledge.append(PRODUCTS[prod_id])
                                     product_found = True
                 
-                # Nếu không tìm thấy cụ thể, trả về toàn bộ danh sách sản phẩm
+                # Nếu không tìm thấy cụ thể, trả về toàn bộ danh sách sản phẩm nhưng rút gọn
                 if not product_found:
-                    knowledge.append({"available_products": list(PRODUCTS.values())})
+                    short_products = [{"name": p["name"], "price_vnd": p["price_vnd"]} for p in PRODUCTS.values()]
+                    knowledge.append({"available_products": short_products})
                 
         return RetrievedContext(knowledge=knowledge)
