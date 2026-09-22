@@ -39,7 +39,25 @@ async def chat_endpoint(req: ChatRequest):
     turn_input = TurnInput(conversation_id=req.conversation_id, text=req.message)
     
     result = await harness.run_turn(turn_input, state)
-    return {"response": result.response_text}
+    
+    debug_info = {
+        "intent": result.perception.intent if result.perception else "unknown",
+        "retrieved_knowledge": result.retrieved.knowledge if result.retrieved else [],
+        "steps": [
+            {
+                "action": step.plan.action,
+                "rationale": step.plan.rationale,
+                "tool": step.plan.tool_name,
+                "tool_args": step.plan.arguments,
+            }
+            for step in result.steps
+        ] if result.steps else []
+    }
+    
+    return {
+        "response": result.response_text,
+        "debug": debug_info
+    }
 
 # Optional root endpoint for health checks
 @app.get("/")
