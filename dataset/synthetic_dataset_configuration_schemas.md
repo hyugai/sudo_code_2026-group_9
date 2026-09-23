@@ -1,144 +1,44 @@
-# Synthetic Dataset Configuration Schemas
+# Synthetic Dataset Dimension Architecture
 
-## How a Synthetic Case Is Constructed
+## 1. Dimension Architecture
 
-A single synthetic case should not be defined by only one label. It is constructed from several independent dimensions that describe different parts of the situation.
-
-The core structure is:
+A synthetic case should be constructed from independent dimensions rather than one hard-coded scenario.
 
 ```text
-Synthetic Case
-=
 Case Study
 × Persona
 × Optional Difficult Scenario
-× Interaction Configuration
+× Journey Pattern
+× Customer
+× Business Ground Truth
 × Expected Outcome
+↓
+Compatibility Rules
+↓
+Case Specification
+↓
+LLM generates Vietnamese transcript
 ```
 
-Each dimension has a different role:
+| Dimension | Purpose |
+|---|---|
+| Case Study | What system-level problem is being tested? |
+| Persona | What kind of customer is being simulated? |
+| Difficult Scenario | What optional complication happens? |
+| Journey Pattern | How many sessions, which channels, and in what order? |
+| Customer | Who is the synthetic customer? |
+| Business Ground Truth | Which products, prices, promotions, inventory, and policies are true? |
+| Expected Outcome | What should the case end with? |
+| Compatibility Rules | Is the sampled combination logically valid? |
+| Case Specification | Final deterministic scenario given to the LLM |
 
-| Dimension | Question it answers | Example |
-|---|---|---|
-| `Case Study` | What system-level problem is being tested? | `session_continuity` |
-| `Persona` | What kind of customer is being simulated? | `hesitant_family_approval` |
-| `Difficult Scenario` | What optional complication is added? | `expired_promotion` |
-| `Interaction Configuration` | How does the case unfold operationally? | `2 sessions`, `voice → chat`, `2 different agents` |
-| `Expected Outcome` | What should the interaction end with? | `callback_scheduled`, `closed_won`, `resolved`, `escalated` |
-
-These dimensions should be kept separate because they describe different aspects of the same case.
-
-For example:
-
-```json
-{
-  "case_id": "CASE_01",
-  "persona_id": "P01",
-  "difficulty_id": "D03",
-  "interaction_configuration": {
-    "session_count": 2,
-    "channels": ["voice", "voice"]
-  },
-  "expected_outcome": "callback_scheduled"
-}
-```
-
-This means:
-
-```text
-System problem:
-    Returning-customer session continuity
-
-Customer type:
-    Hesitant customer who needs family approval
-
-Optional complication:
-    The previously offered promotion has expired
-
-Interaction shape:
-    Two voice sessions
-
-Expected ending:
-    Follow-up or another valid business outcome
-```
-
-The important distinction is:
-
-```text
-Case Study
-    = system problem
-
-Persona
-    = customer archetype
-
-Difficult Scenario
-    = optional complication
-
-Interaction Configuration
-    = operational structure of the journey
-
-Expected Outcome
-    = final business/service state
-```
-
-`Difficult Scenario` is optional for an individual generated case. A normal case can therefore be:
-
-```json
-{
-  "case_id": "CASE_01",
-  "persona_id": "P01",
-  "difficulty_id": null
-}
-```
-
-while a harder variation of the same case can be:
-
-```json
-{
-  "case_id": "CASE_01",
-  "persona_id": "P01",
-  "difficulty_id": "D03"
-}
-```
-
-Not every possible combination is logically valid. Therefore, after sampling the dimensions, the generator should apply `compatibility_rules.jsonl`.
-
-The recommended generation process is:
-
-```text
-Select Case Study
-        ↓
-Select Persona
-        ↓
-Optionally select Difficult Scenario
-        ↓
-Select interaction configuration
-        ↓
-Apply compatibility rules
-        ↓
-Build deterministic case specification
-        ↓
-Generate natural-language conversation
-```
-
-This design keeps the synthetic-data generator controllable, reusable, and suitable for producing both normal and difficult multi-session cases.
+**Principle:** input files decide **what** must happen; `case_specs.jsonl` records **exactly what** should happen; the LLM decides **how** it is naturally expressed in Vietnamese.
 
 ---
 
-This document defines four JSONL configuration files for synthetic dataset generation:
+## 2. `case_studies.jsonl`
 
-1. `case_studies.jsonl`
-2. `personas.jsonl`
-3. `difficult_scenarios.jsonl`
-4. `compatibility_rules.jsonl`
-
-The first three correspond to concepts explicitly present in the project brief. `compatibility_rules.jsonl` is a derived generation-control layer used to prevent logically invalid synthetic cases.
-
----
-
-## 1. `case_studies.jsonl`
-
-### General format
+Defines the system-level problem being tested.
 
 ```json
 {
@@ -155,43 +55,24 @@ The first three correspond to concepts explicitly present in the project brief. 
 }
 ```
 
-### Key explanation
-
-| Key | Type | Description | Example |
-|---|---|---|---|
-| `case_id` | string | Unique identifier for the case study | `"CASE_01"` |
-| `name` | string | Short machine-readable case name | `"session_continuity"` |
-| `title` | string | Human-readable case title | `"Returning customer continuity"` |
-| `description` | string | Concise explanation of the case | `"Customer returns after a previous interaction"` |
-| `problem` | string | Core business/system problem being tested | `"Previous session context is lost"` |
-| `trigger` | string | Event that activates the case | `"Customer contacts the business again"` |
-| `required_context` | array[string] | Information/state that must exist for the case to make sense | `["previous_interaction", "customer_identity"]` |
-| `baseline_behavior` | array[string] | Expected behavior of the system without the agent harness | `["repeat_questions", "lose_context"]` |
-| `expected_behavior` | array[string] | Behavior expected from the AI Agent Harness | `["retrieve_context", "continue_previous_session"]` |
-| `expected_outcome` | string | General successful result of handling the case | `"continuous_customer_context"` |
-
-### Concept
-
-```text
-Case Study
-=
-What system-level problem are we testing?
-```
-
-Examples from the brief:
-
-```text
-session continuity
-cross-channel continuity
-handoff continuity
-continuous improvement
-```
+| Key | Type | Description |
+|---|---|---|
+| `case_id` | string | Unique case identifier |
+| `name` | string | Machine-readable case name |
+| `title` | string | Human-readable title |
+| `description` | string | Short case description |
+| `problem` | string | Core system/business problem |
+| `trigger` | string | Event that activates the case |
+| `required_context` | array[string] | Context required for the case |
+| `baseline_behavior` | array[string] | Expected behavior without the harness |
+| `expected_behavior` | array[string] | Desired harness behavior |
+| `expected_outcome` | string | General successful result |
 
 ---
 
-## 2. `personas.jsonl`
+## 3. `personas.jsonl`
 
-### General format
+Defines the customer archetype.
 
 ```json
 {
@@ -207,43 +88,23 @@ continuous improvement
 }
 ```
 
-### Key explanation
-
-| Key | Type | Description | Example |
-|---|---|---|---|
-| `persona_id` | string | Unique identifier for the persona | `"P01"` |
-| `level` | string | Requirement level from the brief | `"M1"` |
-| `name` | string | Machine-readable persona name | `"hesitant_family_approval"` |
-| `source_label` | string | Original persona wording from the brief | `"khách do dự cần hỏi người nhà"` |
-| `description` | string | General description of this customer type | `"Customer needs family approval before deciding"` |
-| `characteristics` | array[string] | Relatively stable behavioral characteristics | `["hesitant", "family_influenced"]` |
-| `typical_behaviors` | array[string] | Actions commonly shown by this persona | `["asks_questions", "delays_decision"]` |
-| `typical_goal` | string | What the customer is generally trying to achieve | `"evaluate_purchase"` |
-| `typical_state` | string | Typical state during the customer journey | `"decision_pending"` |
-
-### Concept
-
-```text
-Persona
-=
-What kind of customer are we simulating?
-```
-
-Examples from the brief:
-
-```text
-hesitant customer
-price-comparison customer
-post-purchase customer
-high-engagement non-buyer
-impatient repeat customer
-```
+| Key | Type | Description |
+|---|---|---|
+| `persona_id` | string | Unique persona identifier |
+| `level` | string | Requirement level such as M1/M2 |
+| `name` | string | Machine-readable persona name |
+| `source_label` | string | Original wording from the brief |
+| `description` | string | Customer archetype description |
+| `characteristics` | array[string] | Relatively stable characteristics |
+| `typical_behaviors` | array[string] | Common observable behaviors |
+| `typical_goal` | string | Typical customer objective |
+| `typical_state` | string | Typical journey state |
 
 ---
 
-## 3. `difficult_scenarios.jsonl`
+## 4. `difficult_scenarios.jsonl`
 
-### General format
+Defines an optional complication.
 
 ```json
 {
@@ -260,45 +121,200 @@ impatient repeat customer
 }
 ```
 
-### Key explanation
-
-| Key | Type | Description | Example |
-|---|---|---|---|
-| `difficulty_id` | string | Unique identifier for the difficult scenario | `"D03"` |
-| `name` | string | Machine-readable name | `"expired_promotion"` |
-| `source_label` | string | Original wording from the brief | `"khách đòi áp khuyến mãi đã hết hạn"` |
-| `description` | string | Description of the complication | `"Customer requests a promotion that has already expired"` |
-| `requires_prior_state` | boolean | Whether an earlier interaction/fact must exist | `true` |
-| `required_setup` | array[string] | Conditions that must be created before the complication occurs | `["promotion_previously_active"]` |
-| `event` | string | Concrete event introduced into the case | `"customer_requests_expired_promotion"` |
-| `expected_behavior` | array[string] | Correct handling expected from the harness | `["detect_expiry", "retrieve_current_offer"]` |
-| `forbidden_behavior` | array[string] | Behaviors that would make the handling incorrect | `["claim_expired_promotion_is_active"]` |
-| `evaluation_focus` | array[string] | Metrics/capabilities this scenario is intended to test | `["hallucination_prevention", "temporal_validity"]` |
-
-### Concept
-
-```text
-Difficult Scenario
-=
-What optional complication happens during the case?
-```
-
-Examples from the brief:
-
-```text
-change_of_mind
-conflict_with_previous_session
-expired_promotion
-outside_documentation
-```
+| Key | Type | Description |
+|---|---|---|
+| `difficulty_id` | string | Unique difficult-scenario identifier |
+| `name` | string | Machine-readable name |
+| `source_label` | string | Original wording from the brief |
+| `description` | string | Complication description |
+| `requires_prior_state` | boolean | Whether previous state must exist |
+| `required_setup` | array[string] | Preconditions required |
+| `event` | string | Complication introduced in the case |
+| `expected_behavior` | array[string] | Correct handling behavior |
+| `forbidden_behavior` | array[string] | Behavior that must not occur |
+| `evaluation_focus` | array[string] | Metrics/capabilities being tested |
 
 ---
 
-## 4. `compatibility_rules.jsonl`
+## 5. `journey_patterns.jsonl`
 
-This file controls which combinations may be generated.
+Defines session count, channel sequence, timing, and handoffs.
 
-### General format
+```json
+{
+  "journey_pattern_id": "",
+  "name": "",
+  "description": "",
+  "session_count": 0,
+  "cross_channel": false,
+  "sessions": [
+    {
+      "session_number": 0,
+      "channel": "",
+      "platform": "",
+      "handler_type": "",
+      "handler_change": false,
+      "time_offset": ""
+    }
+  ]
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `journey_pattern_id` | string | Unique journey-pattern identifier |
+| `name` | string | Machine-readable pattern name |
+| `description` | string | Interaction-flow description |
+| `session_count` | integer | Number of sessions |
+| `cross_channel` | boolean | Whether multiple channels are used |
+| `sessions` | array[object] | Ordered session definitions |
+| `sessions[].session_number` | integer | Session position |
+| `sessions[].channel` | string | General channel type |
+| `sessions[].platform` | string | Specific platform |
+| `sessions[].handler_type` | string | Human/AI handler type |
+| `sessions[].handler_change` | boolean | Whether handler changes |
+| `sessions[].time_offset` | string | Relative time from previous session |
+
+---
+
+## 6. `customers.jsonl`
+
+Defines controlled synthetic customer identities and profiles.
+
+```json
+{
+  "customer_id": "",
+  "name": "",
+  "phone": "",
+  "region": "",
+  "addressing": "",
+  "channel_identities": {},
+  "profile": {},
+  "preferences": {},
+  "constraints": {}
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `customer_id` | string | Internal synthetic customer ID |
+| `name` | string | Synthetic customer name |
+| `phone` | string | Synthetic phone number |
+| `region` | string | Regional grouping |
+| `addressing` | string | Vietnamese form of address |
+| `channel_identities` | object | IDs used across phone/Zalo/Facebook/etc. |
+| `profile` | object | Stable customer facts |
+| `preferences` | object | Customer preferences |
+| `constraints` | object | Budget or purchase constraints |
+
+---
+
+## 7. `products.jsonl`
+
+Defines authoritative product ground truth.
+
+```json
+{
+  "product_id": "",
+  "sku": "",
+  "category": "",
+  "name": "",
+  "brand": "",
+  "description": "",
+  "price": {},
+  "specifications": {},
+  "inventory": {},
+  "active": true
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `product_id` | string | Internal product identifier |
+| `sku` | string | Business SKU |
+| `category` | string | Product category |
+| `name` | string | Product name |
+| `brand` | string | Brand |
+| `description` | string | Product description |
+| `price` | object | Current authoritative price |
+| `specifications` | object | Product attributes/specifications |
+| `inventory` | object | Availability information |
+| `active` | boolean | Whether product is currently active |
+
+---
+
+## 8. `promotions.jsonl`
+
+Defines promotion ground truth and validity.
+
+```json
+{
+  "promotion_id": "",
+  "name": "",
+  "description": "",
+  "applicable_product_ids": [],
+  "discount": {},
+  "valid_from": "",
+  "valid_until": "",
+  "conditions": [],
+  "active": true
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `promotion_id` | string | Unique promotion identifier |
+| `name` | string | Promotion name |
+| `description` | string | Promotion details |
+| `applicable_product_ids` | array[string] | Products covered |
+| `discount` | object | Discount/value definition |
+| `valid_from` | string | Start date |
+| `valid_until` | string | Expiry date |
+| `conditions` | array[string] | Additional conditions |
+| `active` | boolean | Whether currently active |
+
+---
+
+## 9. `policies.jsonl`
+
+Defines authoritative business policies.
+
+```json
+{
+  "policy_id": "",
+  "type": "",
+  "title": "",
+  "description": "",
+  "rules": [
+    {
+      "condition": "",
+      "rule": ""
+    }
+  ],
+  "valid_from": "",
+  "valid_until": "",
+  "active": true
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `policy_id` | string | Unique policy identifier |
+| `type` | string | Policy category |
+| `title` | string | Policy title |
+| `description` | string | General description |
+| `rules` | array[object] | Individual policy rules |
+| `rules[].condition` | string | Rule condition |
+| `rules[].rule` | string | Rule result/action |
+| `valid_from` | string | Effective date |
+| `valid_until` | string/null | Expiry date if applicable |
+| `active` | boolean | Whether currently valid |
+
+---
+
+## 10. `compatibility_rules.jsonl`
+
+Defines constraints between dimensions.
 
 ```json
 {
@@ -313,97 +329,134 @@ This file controls which combinations may be generated.
 }
 ```
 
-### Key explanation
-
-| Key | Type | Description | Example |
-|---|---|---|---|
-| `rule_id` | string | Unique rule identifier | `"CR03"` |
-| `name` | string | Machine-readable rule name | `"expired_promotion_requires_history"` |
-| `rule_type` | string | Category of constraint | `"temporal_requirement"` |
-| `when` | object | Condition under which the rule applies | `{"difficulty_id":"D03"}` |
-| `require` | object | Conditions that must be true | `{"minimum_sessions":2}` |
-| `forbid` | object | Conditions that must not occur | `{"promotion_missing":true}` |
-| `action_on_failure` | string | What generator should do when rule fails | `"resample"` |
-| `reason` | string | Human-readable explanation of why the rule exists | `"An expired promotion requires a previously valid promotion"` |
-
-### Concept
-
-```text
-Compatibility Rule
-=
-Can this combination produce a logically valid case?
-```
-
-Example:
-
-```json
-{
-  "rule_id": "CR01",
-  "name": "conflict_requires_previous_session",
-  "rule_type": "session_requirement",
-  "when": {
-    "difficulty_id": "D02"
-  },
-  "require": {
-    "minimum_sessions": 2,
-    "previous_fact_exists": true
-  },
-  "forbid": {},
-  "action_on_failure": "resample",
-  "reason": "A conflict with a previous session cannot exist without a previous fact"
-}
-```
+| Key | Type | Description |
+|---|---|---|
+| `rule_id` | string | Unique rule identifier |
+| `name` | string | Machine-readable rule name |
+| `rule_type` | string | Constraint category |
+| `when` | object | Condition that activates the rule |
+| `require` | object | Conditions that must hold |
+| `forbid` | object | Conditions that must not hold |
+| `action_on_failure` | string | Generator action on invalid combination |
+| `reason` | string | Human-readable explanation |
 
 ---
 
-# Recommended relationship between the four files
+## 11. `case_specs.jsonl`
+
+Generated intermediate file containing the final deterministic scenario.
+
+```json
+{
+  "case_spec_id": "",
+  "case_id": "",
+  "persona_id": "",
+  "difficulty_id": null,
+  "journey_pattern_id": "",
+  "customer_id": "",
+
+  "business_context": {
+    "product_ids": [],
+    "promotion_ids": [],
+    "policy_ids": []
+  },
+
+  "initial_state": {
+    "known_facts": {},
+    "unknown_facts": [],
+    "customer_goal": "",
+    "customer_state": ""
+  },
+
+  "sessions": [
+    {
+      "session_number": 0,
+      "channel": "",
+      "platform": "",
+      "goal": "",
+      "facts_to_establish": {},
+      "facts_to_carry": [],
+      "facts_to_confirm": [],
+      "facts_to_change": {},
+      "facts_to_invalidate": [],
+      "must_not_ask": [],
+      "event": null,
+      "expected_actions": [],
+      "expected_outcome": ""
+    }
+  ],
+
+  "final_expected_state": {
+    "customer_state": "",
+    "purchase_state": "",
+    "resolved_items": [],
+    "unresolved_items": []
+  },
+
+  "evaluation_ground_truth": {
+    "must_carry_over": [],
+    "must_not_ask": [],
+    "must_confirm": [],
+    "must_not_claim": [],
+    "required_actions": [],
+    "forbidden_actions": [],
+    "success_conditions": []
+  }
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `case_spec_id` | string | Unique concrete case ID |
+| `case_id` | string | Selected case study |
+| `persona_id` | string | Selected persona |
+| `difficulty_id` | string/null | Optional complication |
+| `journey_pattern_id` | string | Selected journey structure |
+| `customer_id` | string | Customer used in the case |
+| `business_context` | object | Relevant business-data references |
+| `initial_state` | object | Ground truth before the first session |
+| `sessions` | array[object] | Ordered session specifications |
+| `final_expected_state` | object | Ground truth after all sessions |
+| `evaluation_ground_truth` | object | Machine-checkable expectations |
+
+### Important session keys
+
+| Key | Type | Description |
+|---|---|---|
+| `facts_to_establish` | object | Facts that must become known |
+| `facts_to_carry` | array[string] | Facts carried from earlier sessions |
+| `facts_to_confirm` | array[string] | Existing facts requiring confirmation |
+| `facts_to_change` | object | Facts whose active value changes |
+| `facts_to_invalidate` | array[string] | Old facts that should no longer be active |
+| `must_not_ask` | array[string] | Known facts the agent must not re-ask openly |
+| `event` | string/null | Optional difficult event |
+| `expected_actions` | array[string] | Required actions |
+| `expected_outcome` | string | Expected session result |
+
+### Evaluation keys
+
+| Key | Type | Description |
+|---|---|---|
+| `must_carry_over` | array[string] | Context Carryover ground truth |
+| `must_not_ask` | array[string] | Repeat-Question ground truth |
+| `must_confirm` | array[string] | Facts that should be confirmed |
+| `must_not_claim` | array[string] | Unsupported claims that are forbidden |
+| `required_actions` | array[string] | Actions required for success |
+| `forbidden_actions` | array[string] | Actions that indicate failure |
+| `success_conditions` | array | Machine-checkable task-success conditions |
+
+---
+
+## Final Pipeline
 
 ```text
-case_studies.jsonl
-        ↓
-      CASE
-
-personas.jsonl
-        ↓
-     PERSONA
-
-difficult_scenarios.jsonl
-        ↓
- OPTIONAL COMPLICATION
-
-        ↓
-Case × Persona × Difficulty
-        ↓
-compatibility_rules.jsonl
-        ↓
-valid combination
-        ↓
-Concrete Case Specification
-        ↓
+Input Definition Files
+↓
+Compatibility Validation
+↓
+case_specs.jsonl
+↓
 LLM Conversation Generation
+↓
+Vietnamese Multi-session / Multi-channel Transcripts
 ```
-
-A generated configuration might initially be:
-
-```json
-{
-  "case_id": "CASE_01",
-  "persona_id": "P01",
-  "difficulty_id": "D03"
-}
-```
-
-The compatibility layer can then enrich and validate it:
-
-```json
-{
-  "case_id": "CASE_01",
-  "persona_id": "P01",
-  "difficulty_id": "D03",
-  "session_count": 2,
-  "prior_promotion_required": true,
-  "promotion_must_expire_before_session": 2
-}
-```
-
-That validated combination should feed into the case specification generator, rather than sending the three labels directly to the LLM.
