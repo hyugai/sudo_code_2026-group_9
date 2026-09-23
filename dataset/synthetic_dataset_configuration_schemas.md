@@ -1,5 +1,130 @@
 # Synthetic Dataset Configuration Schemas
 
+## How a Synthetic Case Is Constructed
+
+A single synthetic case should not be defined by only one label. It is constructed from several independent dimensions that describe different parts of the situation.
+
+The core structure is:
+
+```text
+Synthetic Case
+=
+Case Study
+× Persona
+× Optional Difficult Scenario
+× Interaction Configuration
+× Expected Outcome
+```
+
+Each dimension has a different role:
+
+| Dimension | Question it answers | Example |
+|---|---|---|
+| `Case Study` | What system-level problem is being tested? | `session_continuity` |
+| `Persona` | What kind of customer is being simulated? | `hesitant_family_approval` |
+| `Difficult Scenario` | What optional complication is added? | `expired_promotion` |
+| `Interaction Configuration` | How does the case unfold operationally? | `2 sessions`, `voice → chat`, `2 different agents` |
+| `Expected Outcome` | What should the interaction end with? | `callback_scheduled`, `closed_won`, `resolved`, `escalated` |
+
+These dimensions should be kept separate because they describe different aspects of the same case.
+
+For example:
+
+```json
+{
+  "case_id": "CASE_01",
+  "persona_id": "P01",
+  "difficulty_id": "D03",
+  "interaction_configuration": {
+    "session_count": 2,
+    "channels": ["voice", "voice"]
+  },
+  "expected_outcome": "callback_scheduled"
+}
+```
+
+This means:
+
+```text
+System problem:
+    Returning-customer session continuity
+
+Customer type:
+    Hesitant customer who needs family approval
+
+Optional complication:
+    The previously offered promotion has expired
+
+Interaction shape:
+    Two voice sessions
+
+Expected ending:
+    Follow-up or another valid business outcome
+```
+
+The important distinction is:
+
+```text
+Case Study
+    = system problem
+
+Persona
+    = customer archetype
+
+Difficult Scenario
+    = optional complication
+
+Interaction Configuration
+    = operational structure of the journey
+
+Expected Outcome
+    = final business/service state
+```
+
+`Difficult Scenario` is optional for an individual generated case. A normal case can therefore be:
+
+```json
+{
+  "case_id": "CASE_01",
+  "persona_id": "P01",
+  "difficulty_id": null
+}
+```
+
+while a harder variation of the same case can be:
+
+```json
+{
+  "case_id": "CASE_01",
+  "persona_id": "P01",
+  "difficulty_id": "D03"
+}
+```
+
+Not every possible combination is logically valid. Therefore, after sampling the dimensions, the generator should apply `compatibility_rules.jsonl`.
+
+The recommended generation process is:
+
+```text
+Select Case Study
+        ↓
+Select Persona
+        ↓
+Optionally select Difficult Scenario
+        ↓
+Select interaction configuration
+        ↓
+Apply compatibility rules
+        ↓
+Build deterministic case specification
+        ↓
+Generate natural-language conversation
+```
+
+This design keeps the synthetic-data generator controllable, reusable, and suitable for producing both normal and difficult multi-session cases.
+
+---
+
 This document defines four JSONL configuration files for synthetic dataset generation:
 
 1. `case_studies.jsonl`
