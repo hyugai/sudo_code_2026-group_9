@@ -1,4 +1,6 @@
-# 1. Diagram
+# Synthetic Scenario → Agent → Evaluation Flow
+
+```text
                 SYNTHETIC SCENARIO
                "What should be true"
                         │
@@ -61,17 +63,34 @@ already known?    from earlier                        claims?
               └─────────┬─────────┘
                         ▼
              QUANTITATIVE IMPROVEMENT
+```
 
+## Key idea
 
-## 1.1 Notes
-> Synthetic scenario
-> = reference expectations
+```text
+Synthetic scenario
+= reference expectations
 
-> Agent run
-> = actual behavior
+Agent run
+= actual behavior
 
-> Evaluator
-> = checks how well actual behavior satisfies those expectations
+Evaluator
+= checks how well actual behavior satisfies those expectations
 
-> Baseline vs Full System
-> = proves whether memory/harness actually improves performance
+Baseline vs Full System
+= proves whether memory/harness actually improves performance
+```
+
+## Metric directions
+
+```text
+RQR ↓
+CCR ↑
+TSR ↑
+HR  ↓
+```
+
+- **RQR — Repeat-Question Rate:** lower is better.
+- **CCR — Context Carryover Rate:** higher is better.
+- **TSR — Task Success Rate:** higher is better.
+- **HR — Hallucination Rate:** lower is better.
