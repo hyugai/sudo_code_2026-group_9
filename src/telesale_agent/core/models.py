@@ -137,6 +137,8 @@ class ConversationState:
     conversation_id: str
     turn_number: int = 0
     identity: CustomerIdentity | None = None
+    customer_profile: JsonObject | None = None
+    past_history: JsonObject | None = None
     retrieved_data: RetrievedContext | None = None
     call_brief: CallBrief | None = None
     messages: list[Message] = field(default_factory=list)
