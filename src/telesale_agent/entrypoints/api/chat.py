@@ -5,7 +5,7 @@ import sys
 import os
 
 # Add src to Python path so we can import the agent
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), "src"))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
 
 from telesale_agent.bootstrap import build_default_harness
 from telesale_agent.core.models import TurnInput, ConversationState
