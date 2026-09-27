@@ -29,6 +29,7 @@ sessions = {}
 class ChatRequest(BaseModel):
     conversation_id: str
     message: str
+    customer_phone: str | None = None
 
 @app.post("/api/chat")
 async def chat_endpoint(req: ChatRequest):
@@ -36,13 +37,18 @@ async def chat_endpoint(req: ChatRequest):
         sessions[req.conversation_id] = ConversationState(conversation_id=req.conversation_id)
     
     state = sessions[req.conversation_id]
-    turn_input = TurnInput(conversation_id=req.conversation_id, text=req.message)
+    turn_input = TurnInput(conversation_id=req.conversation_id, 
+                          text=req.message,
+                          customer_hint=req.customer_phone,
+                          )
     
     result = await harness.run_turn(turn_input, state)
     
     debug_info = {
         "intent": result.perception.intent if result.perception else "unknown",
         "retrieved_knowledge": result.retrieved.knowledge if result.retrieved else [],
+        "crm_profile": result.state.customer_profile,
+        "past_history": result.state.past_history,
         "steps": [
             {
                 "action": step.plan.action,
