@@ -126,6 +126,13 @@ SHIPPING_POLICY: dict[str, Any] = {
 }
 
 
+PRIVACY_POLICY: dict[str, Any] = {
+    "policy_id": "PRIVACY_001",
+    "title": "Chính sách bảo mật",
+    "content": "Chúng tôi cam kết bảo mật tuyệt đối thông tin cá nhân của khách hàng (SĐT, địa chỉ, lịch sử mua hàng). Tuyệt đối không chia sẻ cho bên thứ 3 dưới mọi hình thức."
+}
+
+
 PROMOTIONS: list[dict[str, Any]] = [
     {
         "promotion_id": "PROMO_H5_10",

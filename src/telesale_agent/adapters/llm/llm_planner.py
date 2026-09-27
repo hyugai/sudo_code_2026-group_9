@@ -36,8 +36,11 @@ class LLMPlanner(Planner):
         call_brief = dataclasses.asdict(context.call_brief) if context.call_brief else {}
         knowledge = context.retrieved.knowledge if context.retrieved else []
         
+        customer_profile = context.state.customer_profile or {}
+        past_history = context.state.past_history or {}
+        
         prompt = f"""You are a professional and skillful Telesales Agent.
-Your task is to determine the next action and write a response for the customer based on the Call Brief and retrieved Knowledge.
+Your task is to determine the next action and write a response for the customer based on the Call Brief, CRM Profile, and retrieved Knowledge.
 NOTE: Your internal reasoning can be in English, but the final `response_text` MUST be in fluent, polite Vietnamese suitable for a phone conversation.
 
 -- CUSTOMER INFO & CONTEXT --
@@ -46,13 +49,20 @@ Recent Customer Utterance: "{transcript}"
 Call Brief:
 {json.dumps(call_brief, ensure_ascii=False, indent=2)}
 
+-- CUSTOMER CRM PROFILE --
+{json.dumps(customer_profile, ensure_ascii=False, indent=2)}
+
+-- CUSTOMER PAST HISTORY --
+{json.dumps(past_history, ensure_ascii=False, indent=2)}
+
 -- RETRIEVED KNOWLEDGE (RAG) --
 {json.dumps(knowledge, ensure_ascii=False, indent=2)}
 
 -- INSTRUCTIONS --
 1. Analyze the context and decide the next action ('respond_to_customer' or 'transfer_to_human').
-2. ALWAYS provide a `response_text` naturally and politely in Vietnamese, even if you are transferring the call (e.g., "Dạ, để em nối máy cho chuyên viên hỗ trợ anh/chị nhé...").
-3. Base your pricing and policy answers STRICTLY on the RETRIEVED KNOWLEDGE. Do not hallucinate information.
+2. ALWAYS provide a `response_text` naturally and politely in Vietnamese.
+3. USE the CRM Profile (like customer's name, honorific, past orders) to personalize your greeting and response. If they bought something before, you can smoothly mention it if relevant.
+4. Base your pricing and policy answers STRICTLY on the RETRIEVED KNOWLEDGE. Do not hallucinate information.
 
 Formulate your action plan:"""
 

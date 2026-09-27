@@ -7,8 +7,8 @@ from telesale_agent.core.models import Perception, TurnContext
 from telesale_agent.config.settings import settings
 
 class IntentSchema(BaseModel):
-    intent: str = Field(
-        description="The main intent of the customer. From these intent of: ask_product, ask_return_policy, ask_shipping_policy, price_objection, complain, unknown"
+    intents: list[str] = Field(
+        description="List of intents of the customer. Choose one or multiple from: ask_product, ask_policy, price_objection, complain, create_order, unknown"
     )
     entities: dict = Field(
         description="Entities extracted from the utterance, e.g., {'product_name': 'headphones', 'price': 500000}", 
@@ -46,7 +46,8 @@ Customer utterance: "{transcript}"
             
             return Perception(
                 transcript=transcript,
-                intent=result.intent,
+                intent=result.intents[0] if result.intents else "unknown",
+                intents=result.intents,
                 entities=result.entities,
                 confidence=1.0
             )
