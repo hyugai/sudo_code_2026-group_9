@@ -5,10 +5,12 @@ from langchain_groq import ChatGroq
 from telesale_agent.core.interfaces import Perceiver
 from telesale_agent.core.models import Perception, TurnContext
 from telesale_agent.config.settings import settings
+from telesale_agent.config.intent_taxonomy import INTENT_NAMES, build_intent_prompt_section
+from telesale_agent.adapters.rules.pii_utils import mask_pii
 
 class IntentSchema(BaseModel):
     intents: list[str] = Field(
-        description="List of intents of the customer. Choose one or multiple from: ask_product, ask_policy, price_objection, complain, create_order, unknown"
+        description=f"List of intents. Choose one or more from: {', '.join(INTENT_NAMES)}"
     )
     entities: dict = Field(
         description="Entities extracted from the utterance, e.g., {'product_name': 'headphones', 'price': 500000}", 
@@ -33,11 +35,20 @@ class LLMPerceiver(Perceiver):
 
         transcript = context.input.text.strip()
         
-        prompt = f"""You are an advanced NLU AI system designed for a telesales call center.
-Analyze the following customer utterance and extract the all the intents and relevant entities.
-The utterance is in Vietnamese, but you must output the structured JSON.
+        # Mask PII in the raw transcript BEFORE sending to external LLM API
+        # This ensures CCCD/STK/phone numbers never leave the system boundary.
+        sanitised_transcript, _ = mask_pii(transcript)
+        
+        prompt = f"""You are an advanced NLU system for a Vietnamese telesales call center.
+Your task: extract ALL intents and entities from the customer utterance below.
 
-Customer utterance: "{transcript}"
+{build_intent_prompt_section()}
+## IMPORTANT RULES
+1. A single utterance CAN have multiple intents — return ALL that apply.
+2. If the utterance mentions both a product AND a fee/policy keyword → return BOTH intents.
+3. Extract entities as key-value pairs (product_name, brand, quantity, budget, room_size, etc.).
+
+Customer utterance: "{sanitised_transcript}"
 """
         
         # Call Groq API for structured JSON

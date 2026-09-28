@@ -1,6 +1,7 @@
 from telesale_agent.core.interfaces import Retriever
 from telesale_agent.core.models import RetrievedContext, TurnContext
 from telesale_agent.adapters.mock.mock_data import RETURN_POLICY, SHIPPING_POLICY, PRIVACY_POLICY, PRODUCTS, PRODUCT_ALIASES
+from telesale_agent.config.intent_taxonomy import INTENT_MAP
 
 class MockDataRetriever(Retriever):
     """Local demo that retrieves data from mock_data based on intent."""
@@ -52,5 +53,20 @@ class MockDataRetriever(Retriever):
                 if not product_found:
                     short_products = [{"name": p["name"], "price_vnd": p["price_vnd"]} for p in PRODUCTS.values()]
                     knowledge.append({"available_products": short_products})
-                
+
+            # Safety net: scan transcript using retrieval_keywords defined in intent_taxonomy.
+            # This catches cases where the intent was misclassified but the keywords are clear.
+            # Map of keyword-set → policy document (mock VectorDB equivalent)
+            _keyword_to_policy = {
+                "shipping": (INTENT_MAP["ask_policy"].retrieval_keywords[:6], SHIPPING_POLICY),
+                "return":   (["đổi trả", "hoàn tiền", "trả hàng"], RETURN_POLICY),
+                "privacy":  (["bảo mật", "thông tin cá nhân", "quyền riêng tư"], PRIVACY_POLICY),
+            }
+            for _keywords, _policy in _keyword_to_policy.values():
+                if any(k in transcript for k in _keywords) and _policy not in knowledge:
+                    knowledge.append(_policy)
+
+            # provide_info / end_call: no knowledge retrieval needed —
+            # Node Plan handles these via memory.write and respond_to_customer actions.
+
         return RetrievedContext(knowledge=knowledge)

@@ -14,7 +14,7 @@ class ActionPlanSchema(BaseModel):
     target_intent: str | None = Field(description="The target intent if applicable", default=None)
     response_text: str = Field(description="The final response text to speak/chat with the customer (must be in Vietnamese). DO NOT leave empty.")
     tool_name: str | None = Field(description="The name of the tool to call if action is 'call_api'", default=None)
-    arguments: dict = Field(description="Arguments for the tool", default_factory=dict)
+    arguments: dict | None = Field(description="Arguments for the tool (use empty object {} if none)", default=None)
 
 class LLMPlanner(Planner):
     """
@@ -74,7 +74,7 @@ Formulate your action plan:"""
                 target_intent=result.target_intent,
                 response_text=result.response_text,
                 tool_name=result.tool_name,
-                arguments=result.arguments
+                arguments=result.arguments or {}
             )
         except Exception as e:
             print(f"LLMPlanner Error: {e}")
