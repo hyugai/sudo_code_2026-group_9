@@ -18,16 +18,53 @@ Tài liệu này mô tả yêu cầu dataset của đề Sudo Code 2026, các ng
 
 ## 2. Dữ liệu đầu vào
 
-| Đường dẫn | Kiểu dữ liệu | Nội dung |
+| Đường dẫn | Kiểu dữ liệu | Vai trò trong quá trình sinh data |
 |---|---|---|
-| `case_studies.jsonl` | JSON Lines, mỗi dòng là một object | Các bài toán hoặc mục tiêu cấp cao mà scenario cần kiểm tra |
-| `personas.jsonl` | JSON Lines, mỗi dòng là một object | Các kiểu khách hàng và hành vi điển hình |
-| `difficult_scenarios.jsonl` | JSON Lines, mỗi dòng là một object | Các tình huống khó như đổi ý, mâu thuẫn, khuyến mãi hết hạn hoặc hỏi ngoài tài liệu |
-| `compatibility_rules.jsonl` | JSON Lines, mỗi dòng là một object | Luật kiểm tra các dimension có thể kết hợp hợp lệ hay không |
-| `products.json` hoặc `products.csv` | JSON hoặc CSV | Danh sách sản phẩm, SKU, giá, thuộc tính, tồn kho và biến thể |
-| `policy/` | Thư mục Markdown | Chính sách bán hàng, đổi trả, vận chuyển, bảo hành và tài liệu liên quan |
-| `promotions.json` | JSON | Chương trình khuyến mãi và điều kiện áp dụng |
-| `crm_seed.json` | JSON | Hồ sơ khách hàng, định danh kênh và lịch sử đơn hàng ban đầu |
+| `case_studies.jsonl` | JSON Lines, mỗi dòng là một object | Danh sách mục tiêu nghiệp vụ hoặc năng lực cần kiểm tra. Generator dùng file này để chọn chủ đề chính, kết quả mong đợi và phân bổ độ phủ của các scenario. |
+| `personas.jsonl` | JSON Lines, mỗi dòng là một object | Mô tả kiểu khách hàng, cách nói, mức kiên nhẫn và hành vi. Dùng để tạo `persona`, `customer_turns` và phản ứng của customer simulator; không phải nguồn sự thật về sản phẩm hoặc chính sách. |
+| `difficult_scenarios.jsonl` | JSON Lines, mỗi dòng là một object | Thư viện ca khó như đổi ý, dữ liệu mâu thuẫn, khuyến mãi hết hạn, hết hàng khi khách quyết hoặc hỏi ngoài phạm vi. Dùng để gán `hard_case` và tạo các điều kiện chấm tương ứng. |
+| `compatibility_rules.jsonl` | JSON Lines, mỗi dòng là một object | Luật cho phép hoặc cấm kết hợp case study, persona, ca khó, ngành hàng, kênh và số phiên. Dùng để loại tổ hợp vô lý trước khi viết hội thoại. |
+| `catalog/products.json` | JSON | Nguồn catalog chuẩn cho tên sản phẩm, SKU, giá niêm yết, thuộc tính, biến thể, phụ thu, trạng thái ngừng bán và tồn kho tĩnh. Tồn kho tĩnh chỉ là giá trị fallback khi không có sự kiện tồn kho phù hợp theo ngày. |
+| `catalog/products.csv` | CSV | Bản biểu diễn dạng bảng của catalog để kiểm tra hoặc xử lý thủ công. Không nên đọc đồng thời cả JSON và CSV như hai nguồn độc lập; logic tham chiếu của BTC sử dụng `products.json`. |
+| `catalog/inventory_timeline.json` | JSON | Các mốc thay đổi số lượng tồn kho theo `sku` và ngày. Dùng cùng ngày của từng cuộc gọi để sinh `ground_truth_facts`, lời đáp mong đợi và kết quả của `inventory.check(on=...)`. |
+| `policy/` | Thư mục Markdown | Kho tri thức về bán hàng, đổi trả, vận chuyển, bảo hành, lịch nghỉ và tài liệu liên quan. Dùng để sinh câu hỏi chính sách, ground truth cho RAG, ca xung đột phiên bản và guardrail tài liệu nội bộ. |
+| `catalog/promotions.json` | JSON | Nguồn sự thật về mã khuyến mãi, thời hạn và điều kiện áp dụng. Dùng để tính báo giá tại ngày gọi và tạo expected tool call cho `pricing.get_quote`; không để LLM tự tính. |
+| `catalog/crm_seed.json` | JSON | Hồ sơ khách hàng seed, định danh theo kênh, lịch sử đơn hàng và các trường hợp trùng định danh. Dùng để chọn khách, tạo `seed_history`, kiểm tra identity resolution, TTL và memory carryover. |
+
+### 2.1. Ý nghĩa của các nhóm input
+
+Các input không có cùng vai trò và không nên được nối toàn bộ vào prompt của agent:
+
+1. **Input thiết kế scenario** gồm `case_studies.jsonl`, `personas.jsonl`, `difficult_scenarios.jsonl` và `compatibility_rules.jsonl`. Chúng quyết định scenario cần kiểm tra điều gì, khách sẽ hành xử thế nào và tổ hợp nào hợp lệ.
+2. **Input business ground truth** gồm `products.json`, `inventory_timeline.json`, `promotions.json` và `crm_seed.json`. Chúng quyết định các giá trị khách quan như SKU, giá, tồn kho tại ngày gọi, chương trình khuyến mãi hợp lệ và lịch sử khách hàng.
+3. **Input tri thức và guardrail** là thư mục `policy/`. Nội dung ở đây được dùng để sinh câu hỏi, dựng chỉ mục RAG và xác định câu trả lời được phép; tài liệu cũ hoặc nội bộ vẫn có thể được giữ để tạo ca khó nhưng không được coi là chính sách hiện hành dành cho khách.
+
+`products.json`, `inventory_timeline.json`, `promotions.json`, `crm_seed.json` và `policy/` nên được agent truy cập thông qua tool, RAG hoặc context đã được lọc. Generator được phép dùng chúng để tính ground truth, nhưng không được chép toàn bộ dữ liệu hoặc đáp án ẩn vào prompt của agent.
+
+### 2.2. Luồng sử dụng input khi sinh scenario
+
+1. Đọc và chuẩn hóa tất cả input; kiểm tra ID tham chiếu, SKU, ngày và cấu trúc bắt buộc.
+2. Chọn một `case_study`, `persona` và, nếu cần, một `difficult_scenario` theo quota của dataset.
+3. Áp dụng `compatibility_rules` để loại các tổ hợp không hợp lệ.
+4. Chọn khách từ `crm_seed.json` và sản phẩm hoặc biến thể từ `products.json`.
+5. Xác định `call_date` cho từng phiên; tại mỗi ngày, tính tồn kho từ `inventory_timeline.json`, khuyến mãi từ `promotions.json` và chính sách đang có hiệu lực từ `policy/`.
+6. Sinh `customer_goal`, `customer_turns`, dữ kiện được tiết lộ trong từng phiên và chuyển đổi ASR hoặc teencode nếu scenario yêu cầu.
+7. Từ cùng business ground truth, sinh các trường chấm ẩn như `success_if`, `ground_truth_facts`, `must_carry_over`, `must_not_ask` và `memory_expectation`.
+8. Chạy validator và đối chiếu với `eval/mock_tools.py`; scenario chỉ được ghi vào test set khi kết quả tool tham chiếu khớp với ground truth.
+
+### 2.3. Quy tắc dùng `inventory_timeline.json`
+
+Với một SKU và ngày gọi `on`, tồn kho phải được xác định theo đúng logic của `inventory.check`:
+
+1. Nếu sản phẩm đã ngừng bán, trả về hết hàng và `successor_sku` nếu có.
+2. Lọc các event có cùng `sku` và `date <= on`, sau đó lấy event gần `on` nhất.
+3. Nếu tìm thấy event, dùng `qty` của event đó. Giá trị này có hiệu lực cho đến trước event tiếp theo của cùng SKU.
+4. Nếu không có event phù hợp, dùng `stock` của variant trong `products.json`; nếu SKU là sản phẩm cha thì dùng `stock` của sản phẩm.
+5. `in_stock = true` khi `qty > 0`. Nếu `qty = 0`, event tương lai gần nhất có `qty > 0` được dùng làm ngày dự kiến có hàng lại.
+
+Ngày `on` được lấy từ `call_date`; nếu call chỉ có `days_later`, phải tính ngày tuyệt đối theo quy tắc ở mục 6.1 trước khi tra tồn kho. Generator cũng nên kiểm tra `reference_date` giữa các file catalog là thống nhất. `eval/mock_tools.py` là logic tham chiếu cuối cùng nếu có khác biệt trong cách diễn giải.
+
+Ví dụ, `SKU-XM-4P` có `qty = 0` ngày `2026-10-15` và `qty = 20` từ ngày `2026-10-19`. Vì vậy hai cuộc gọi của cùng khách vào ngày 15 và ngày 20 phải lần lượt có `ground_truth_facts.in_stock = false` và `true`.
 
 ## 3. Dữ liệu đầu ra
 
