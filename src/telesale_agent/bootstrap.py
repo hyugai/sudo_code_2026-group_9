@@ -13,7 +13,7 @@ from telesale_agent.adapters.mock.retrieve import MockDataRetriever
 from telesale_agent.adapters.mock.call_brief import SimpleCallBriefBuilder
 from telesale_agent.adapters.llm.llm_planner import LLMPlanner
 from telesale_agent.adapters.rules.pii_guardrail import PIIGuardrail
-from telesale_agent.adapters.crm import FileCRMRetriever
+from telesale_agent.adapters.crm import SupabaseCRMRetriever
 
 from telesale_agent.adapters.mock.act import LocalActor
 from telesale_agent.adapters.mock.observe import BasicObserver
@@ -27,7 +27,7 @@ def build_default_harness() -> LangGraphAgentHarness:
         .with_asr(MockASREngine())
         .with_perceiver(LLMPerceiver())
         .with_identity_resolver(HintIdentityResolver())
-        .with_crm(FileCRMRetriever())
+        .with_crm(SupabaseCRMRetriever())
         .with_retriever(MockDataRetriever())
         .with_call_brief_builder(SimpleCallBriefBuilder())
         .with_planner(LLMPlanner())

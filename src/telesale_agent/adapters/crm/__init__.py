@@ -1,3 +1,3 @@
-from .crm_retriever import FileCRMRetriever
+from .crm_retriever import SupabaseCRMRetriever
 
-__all__ = ["FileCRMRetriever"]
+__all__ = ["SupabaseCRMRetriever"]

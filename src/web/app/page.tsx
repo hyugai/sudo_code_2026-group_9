@@ -20,6 +20,7 @@ export default function Chat() {
   ]);
   const [debugLogs, setDebugLogs] = useState<LogEntry[]>([]);
   const [input, setInput] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("0984726714");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -56,6 +57,7 @@ export default function Chat() {
         body: JSON.stringify({
           conversation_id: sessionId,
           message: userMessage,
+          customer_phone: customerPhone || null,
         }),
       });
 
@@ -125,8 +127,18 @@ export default function Chat() {
             >Logs</button>
           </div>
 
-          <div className="text-xs text-black/60 bg-black/5 px-3 py-1.5 rounded-full font-semibold tracking-wide ml-auto">
-            Session: {sessionId}
+          <div className="flex gap-3 ml-auto items-center">
+            <input
+              type="text"
+              placeholder="SĐT (VD: 0984726714)"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              className="text-xs text-black/80 bg-white border border-black/10 px-3 py-1.5 rounded-full outline-none focus:border-black/30 placeholder-black/30 w-36"
+              title="Nhập SĐT khách hàng (VD: 0984726714)"
+            />
+            <div className="text-xs text-black/60 bg-black/5 px-3 py-1.5 rounded-full font-semibold tracking-wide hidden sm:block">
+              Session: {sessionId}
+            </div>
           </div>
         </header>
 
