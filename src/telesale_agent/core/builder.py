@@ -1,7 +1,7 @@
 from __future__ import annotations
 from telesale_agent.core.interfaces import (
-    ASREngine, Perceiver, IdentityResolver, Retriever, CallBriefBuilder,
-    Planner, Guardrail, Actor, Observer, Persister, CRMRetriever
+    Perceiver, IdentityResolver, Retriever, CallBriefBuilder,
+    Planner, Guardrail, Actor, Observer, Persister, CRMRetriever, ASREngine,
 )
 from telesale_agent.core.langgraph_pipeline import LangGraphAgentHarness
 
@@ -12,7 +12,7 @@ class AgentHarnessBuilder:
         self._asr: ASREngine | None = None
         self._perceive: Perceiver | None = None
         self._identity: IdentityResolver | None = None
-        self._crm: 'CRMRetriever | None' = None
+        self._crm: CRMRetriever | None = None
         self._retrieve: Retriever | None = None
         self._call_brief: CallBriefBuilder | None = None
         self._plan: Planner | None = None

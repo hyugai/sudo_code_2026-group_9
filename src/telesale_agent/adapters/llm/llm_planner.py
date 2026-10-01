@@ -9,12 +9,31 @@ from telesale_agent.core.models import ActionPlan, TurnContext
 from telesale_agent.config.settings import settings
 
 class ActionPlanSchema(BaseModel):
-    action: str = Field(description="The next action to take, e.g., 'respond_to_customer', 'transfer_to_human', 'call_api'")
+    action: str = Field(description="The next action to take: 'respond_to_customer', 'transfer_to_human', or 'call_api'")
     rationale: str = Field(description="The rationale behind this decision")
     target_intent: str | None = Field(description="The target intent if applicable", default=None)
-    response_text: str = Field(description="The final response text to speak/chat with the customer (must be in Vietnamese). DO NOT leave empty.")
+    response_text: str = Field(description="The final response text to speak/chat with the customer (must be in Vietnamese). DO NOT leave empty. If calling a tool, explain you are doing it.", default="Dạ vâng, anh chị chờ em chút ạ.")
     tool_name: str | None = Field(description="The name of the tool to call if action is 'call_api'", default=None)
-    arguments: dict | None = Field(description="Arguments for the tool (use empty object {} if none)", default=None)
+    arguments: dict | None = Field(description="Arguments for the tool as a JSON object", default=None)
+
+# Define tools the LLM can use
+AVAILABLE_TOOLS = [
+    {
+        "name": "order.create",
+        "description": "Create a new order for the customer.",
+        "parameters": {
+            "sku": "String, the product SKU code to order (e.g., 'SKU-AP-Y')",
+            "price_vnd": "Integer, the agreed price in VND (e.g., 5200000)"
+        }
+    },
+    {
+        "name": "catalog.check_stock",
+        "description": "Check inventory for a product.",
+        "parameters": {
+            "sku": "String, the product SKU code"
+        }
+    }
+]
 
 class LLMPlanner(Planner):
     """
@@ -38,6 +57,7 @@ class LLMPlanner(Planner):
         
         customer_profile = context.state.customer_profile or {}
         past_history = context.state.past_history or {}
+        memory_deltas = context.state.memory_deltas or {}
         
         prompt = f"""You are a professional and skillful Telesales Agent.
 Your task is to determine the next action and write a response for the customer based on the Call Brief, CRM Profile, and retrieved Knowledge.
@@ -49,20 +69,31 @@ Recent Customer Utterance: "{transcript}"
 Call Brief:
 {json.dumps(call_brief, ensure_ascii=False, indent=2)}
 
--- CUSTOMER CRM PROFILE --
+-- CUSTOMER CRM PROFILE (M1 Profile) --
 {json.dumps(customer_profile, ensure_ascii=False, indent=2)}
 
--- CUSTOMER PAST HISTORY --
+-- CURRENT SESSION NEW FACTS (M1 Working Profile) --
+{json.dumps(memory_deltas, ensure_ascii=False, indent=2)}
+
+-- CUSTOMER PAST HISTORY (M1 Episodic) --
 {json.dumps(past_history, ensure_ascii=False, indent=2)}
 
 -- RETRIEVED KNOWLEDGE (RAG) --
 {json.dumps(knowledge, ensure_ascii=False, indent=2)}
 
+-- AVAILABLE TOOLS --
+You can use the following tools if the customer requests an action (like placing an order or checking stock):
+{json.dumps(AVAILABLE_TOOLS, ensure_ascii=False, indent=2)}
+
 -- INSTRUCTIONS --
-1. Analyze the context and decide the next action ('respond_to_customer' or 'transfer_to_human').
-2. ALWAYS provide a `response_text` naturally and politely in Vietnamese.
-3. USE the CRM Profile (like customer's name, honorific, past orders) to personalize your greeting and response. If they bought something before, you can smoothly mention it if relevant.
+1. Analyze the context and decide the next action:
+   - 'respond_to_customer': If you just need to talk or answer a question.
+   - 'call_api': If you need to trigger a system action (like creating an order). You MUST provide `tool_name` and `arguments`.
+   - 'transfer_to_human': If the request is beyond your capability.
+2. ALWAYS provide a `response_text` naturally and politely in Vietnamese, even if you are calling an API (e.g., "Dạ vâng, em đang lên đơn cho chị...").
+3. USE the CRM Profile (like customer's name, honorific, past orders) to personalize your greeting.
 4. Base your pricing and policy answers STRICTLY on the RETRIEVED KNOWLEDGE. Do not hallucinate information.
+5. If the customer agrees to buy, use action='call_api', tool_name='order.create', and extract the correct SKU and price from the context.
 
 Formulate your action plan:"""
 

@@ -36,6 +36,12 @@ class LocalActor(Actor):
         # --- Tool-based actions: use BTC-standard tool name ---
         effective_tool = tool_name or action  # LLM may put tool name in action or tool_name
 
+        if effective_tool == "order.create":
+            if "customer_phone" not in args and context.identity and context.identity.customer_id:
+                args["customer_phone"] = context.identity.customer_id
+            if "qty" not in args:
+                args["qty"] = 1
+
         result = dispatch_tool(effective_tool, args)
 
         if "error" in result:

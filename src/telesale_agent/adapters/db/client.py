@@ -202,9 +202,43 @@ class SupabaseClient:
                 "honorific": c.honorific,
                 "phone": c.phone,
                 "region": c.region,
+                "attributes": c.attributes or {},
                 "orders": orders_data,
                 "sessions": sessions_data
             }
+
+    def add_customer_session(self, phone: str, summary: str, outcome: str = "completed"):
+        import uuid
+        from datetime import date
+        with self.get_session() as session:
+            c = session.query(Customer).filter_by(phone=phone).first()
+            if not c:
+                return None
+            new_session = CustomerSession(
+                session_id=str(uuid.uuid4()),
+                customer_id=c.customer_id,
+                session_date=date.today(),
+                channel="voice",
+                summary=summary,
+                outcome=outcome
+            )
+            session.add(new_session)
+            session.commit()
+            return new_session.session_id
+
+    def update_customer_attributes(self, phone: str, deltas: dict):
+        if not deltas:
+            return
+        with self.get_session() as session:
+            c = session.query(Customer).filter_by(phone=phone).first()
+            if c:
+                current_attr = c.attributes or {}
+                # Create a new dict because SQLAlchemy JSONB tracking can be tricky
+                new_attr = dict(current_attr)
+                new_attr.update(deltas)
+                c.attributes = new_attr
+                session.commit()
+                return c.attributes
 
 # Khởi tạo singleton instance
 db_client = SupabaseClient()

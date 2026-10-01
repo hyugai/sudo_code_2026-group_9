@@ -1,4 +1,5 @@
 import os
+from typing import Any
 from pydantic import BaseModel, Field
 from langchain_groq import ChatGroq
 
@@ -12,8 +13,12 @@ class IntentSchema(BaseModel):
     intents: list[str] = Field(
         description=f"List of intents. Choose one or more from: {', '.join(INTENT_NAMES)}"
     )
-    entities: dict = Field(
-        description="Entities extracted from the utterance, e.g., {'product_name': 'headphones', 'price': 500000}", 
+    entities: Any = Field(
+        description="Entities extracted from the utterance. Must be a flat dictionary (e.g., {'product_name': 'headphones', 'price': 500000}), NOT a list.", 
+        default_factory=dict
+    )
+    memory_deltas: dict = Field(
+        description="Profile facts established in this utterance to be saved into long-term memory (e.g. {'room_size': '25m2', 'has_kids': True, 'budget': 5000000}). Return empty dict if no new facts.",
         default_factory=dict
     )
 
@@ -27,7 +32,7 @@ class LLMPerceiver(Perceiver):
         
         # Temperature = 0 for accurate, non-creative extraction
         self.llm = ChatGroq(temperature=0, model_name=model_name, groq_api_key=api_key)
-        self.structured_llm = self.llm.with_structured_output(IntentSchema)
+        self.structured_llm = self.llm.with_structured_output(IntentSchema, method="json_mode")
 
     async def perceive(self, context: TurnContext) -> Perception:
         if context.input.text is None:
@@ -46,7 +51,10 @@ Your task: extract ALL intents and entities from the customer utterance below.
 ## IMPORTANT RULES
 1. A single utterance CAN have multiple intents — return ALL that apply.
 2. If the utterance mentions both a product AND a fee/policy keyword → return BOTH intents.
-3. Extract entities as key-value pairs (product_name, brand, quantity, budget, room_size, etc.).
+3. Extract entities as key-value pairs (product_name, brand, quantity).
+4. Extract `memory_deltas` for any long-term profile facts the customer reveals (e.g., room_size, budget, has_kids).
+
+Respond ONLY with a valid JSON object. Do not include markdown formatting or extra text.
 
 Customer utterance: "{sanitised_transcript}"
 """
@@ -55,11 +63,22 @@ Customer utterance: "{sanitised_transcript}"
         try:
             result = await self.structured_llm.ainvoke(prompt)
             
+            
+            parsed_entities = result.entities
+            if isinstance(parsed_entities, list):
+                if len(parsed_entities) > 0 and isinstance(parsed_entities[0], dict):
+                    parsed_entities = parsed_entities[0]
+                else:
+                    parsed_entities = {}
+            if not isinstance(parsed_entities, dict):
+                parsed_entities = {}
+                
             return Perception(
                 transcript=transcript,
                 intent=result.intents[0] if result.intents else "unknown",
                 intents=result.intents,
-                entities=result.entities,
+                entities=parsed_entities,
+                memory_deltas=result.memory_deltas,
                 confidence=1.0
             )
         except Exception as e:

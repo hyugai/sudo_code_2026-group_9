@@ -51,6 +51,7 @@ class Perception:
     intent: str = "unknown"
     intents: list[str] = field(default_factory=list)
     entities: JsonObject = field(default_factory=dict)
+    memory_deltas: JsonObject = field(default_factory=dict)
     confidence: float = 1.0
 
 
@@ -143,6 +144,7 @@ class ConversationState:
     call_brief: CallBrief | None = None
     messages: list[Message] = field(default_factory=list)
     working_memory: JsonObject = field(default_factory=dict)
+    memory_deltas: JsonObject = field(default_factory=dict)
 
 
 @dataclass(slots=True)

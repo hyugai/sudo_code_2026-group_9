@@ -35,7 +35,12 @@ class SupabaseCRMRetriever(CRMRetriever):
                 "candidates": result.get("candidates", [])
             }
 
-        return result
+        # Combined attributes to a profile dictionary
+        profile = dict(result)
+        if "attributes" in result:
+            profile.update(result["attributes"])
+            
+        return profile
 
     async def precompute_brief(self, ctx: TurnContext) -> Dict[str, Any]:
         """Fetch past orders and session history for the customer."""

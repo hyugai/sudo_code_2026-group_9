@@ -72,6 +72,8 @@ class LangGraphAgentHarness:
             ctx = _get_ctx(state)
             ctx.perception = await self.perceive.perceive(ctx)
             ctx.state.messages.append(Message("customer", ctx.perception.transcript))
+            if ctx.perception.memory_deltas:
+                ctx.state.memory_deltas.update(ctx.perception.memory_deltas)
             return {"context": ctx}
 
         async def node_identity(state: AgentState):
@@ -143,9 +145,9 @@ class LangGraphAgentHarness:
 
         async def node_persist(state: AgentState):
             ctx = _get_ctx(state)
-            await self.persist.persist(ctx)
             if ctx.plan and ctx.plan.response_text:
                 ctx.state.messages.append(Message("agent", ctx.plan.response_text))
+            await self.persist.persist(ctx)
             return {"context": ctx}
 
         # Add Nodes to Graph
@@ -247,6 +249,8 @@ class LangGraphAgentHarness:
                 if node_name == "perceive" and ctx.perception:
                     print(f"   -> Intent: {ctx.perception.intent}")
                     print(f"   -> Entities: {ctx.perception.entities}")
+                    if ctx.perception.memory_deltas:
+                        print(f"   -> Memory Deltas: {ctx.perception.memory_deltas}")
                 elif node_name == "identity" and ctx.identity:
                     print(f"   -> Customer ID: {ctx.identity.customer_id}")
                 elif node_name == "crm_profile":

@@ -73,6 +73,7 @@ class Customer(Base):
     fb_id = Column(String(100))
     region = Column(String(50))
     shared_phone_with = Column(String(50))
+    attributes = Column(JSONB, default=dict)
     
     orders = relationship("Order", back_populates="customer", cascade="all, delete-orphan")
     sessions = relationship("CustomerSession", back_populates="customer", cascade="all, delete-orphan")
